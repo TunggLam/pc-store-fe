@@ -1,0 +1,33 @@
+image: docker:latest
+
+services:
+  - docker:dind
+
+stages:
+  - docker build
+  - deploy
+
+docker-build:
+  stage: docker build
+  script:
+    - docker build -t ${CI_PROJECT_NAME} .
+    - docker images
+    - docker login --username $DOCKER_USERNAME --password $DOCKER_PASSWORD
+    - docker tag ${CI_PROJECT_NAME} $DOCKER_USERNAME/${CI_PROJECT_NAME}:latest
+    - docker push $DOCKER_USERNAME/${CI_PROJECT_NAME}:latest
+
+deploy:
+  image: alpine:latest
+  stage: deploy
+  before_script:
+    - chmod 400 $SSH_KEY
+    - apk update && apk add openssh-client
+  script:
+    - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@$IP_SERVER "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
+    - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@$IP_SERVER "docker stop ${CI_PROJECT_NAME} || true"
+    - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@$IP_SERVER "docker rm ${CI_PROJECT_NAME} || true"
+    - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@$IP_SERVER "docker rmi $DOCKER_USERNAME/${CI_PROJECT_NAME}:latest || true"
+    - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@$IP_SERVER "docker pull $DOCKER_USERNAME/${CI_PROJECT_NAME}:latest"
+    - ssh -o StrictHostKeyChecking=no -i $SSH_KEY root@$IP_SERVER "docker run --name ${CI_PROJECT_NAME} -d -p 7070:80 $DOCKER_USERNAME/${CI_PROJECT_NAME}:latest"
+  only:
+    - master

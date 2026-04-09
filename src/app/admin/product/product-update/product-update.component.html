@@ -1,0 +1,100 @@
+<app-loading></app-loading>
+<div class="uk-card uk-card-default border rounded">
+  <div class="uk-card-header">
+    <div class="uk-card-title">
+      <h3 class="uk-card-title uk-margin-remove-bottom">Chỉnh sửa sản phẩm</h3>
+    </div>
+  </div>
+  <form [formGroup]="formUpdate" (ngSubmit)="updateProduct()">
+    <div class="card-body">
+      <div class="row justify-content-center">
+        <div class="col-lg-6">
+
+          <div class="form-item w-100 mb-3 position-relative">
+            <label class="form-label my-3"><strong>Tên sản phẩm</strong></label>
+            <input type="text"
+                   class="form-control p-3 mb-3"
+                   formControlName="name"
+                   placeholder="Nhập tên sản phẩm"
+                   [ngClass]="{ 'is-invalid' :  (f['name'].touched)  && f['name'].errors,
+                                  'is-valid' :  (f['name'].touched)  && !f['name'].errors}">
+            <app-show-validate-error [control]="formUpdate.controls['name']"
+                                     [controlName]="'Tên sản phẩm'">
+            </app-show-validate-error>
+          </div>
+          <div class="form-item w-100 mb-3 position-relative">
+            <label class="form-label my-3"><strong>Số lượng</strong></label>
+            <input type="number"
+                   class="form-control p-3 mb-3"
+                   formControlName="quantity"
+                   placeholder="Nhập số lượng sản phẩm"
+                   [ngClass]="{ 'is-invalid' :  (f['quantity'].touched)  && f['quantity'].errors,
+                                  'is-valid' :  (f['quantity'].touched)  && !f['quantity'].errors}">
+            <app-show-validate-error [control]="formUpdate.controls['quantity']"
+                                     [controlName]="'Số lượng'">
+            </app-show-validate-error>
+          </div>
+          <div class="form-item w-100 mb-3 position-relative">
+            <label class="form-label my-3"><strong>Mô tả</strong></label>
+            <textarea type="text"
+                      class="form-control p-3 mb-3"
+                      formControlName="description"
+                      placeholder="Nhập mô tả sản phẩm"
+                      [ngClass]="{ 'is-invalid' :  (f['description'].touched)  && f['description'].errors,
+                                  'is-valid' :  (f['description'].touched)  && !f['description'].errors}"></textarea>
+            <app-show-validate-error [control]="formUpdate.controls['description']"
+                                     [controlName]="'Mô tả'">
+            </app-show-validate-error>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="form-item w-100 mb-3 position-relative">
+            <label class="form-label my-3"><strong>Loại sản phẩm</strong></label>
+            <select class="form-select p-3 mb-3" formControlName="categoryId">
+              <option *ngFor="let category of categories" [value]="category?.id">{{category?.name}}</option>
+            </select>
+            <div class="form-item w-100 mb-3 position-relative">
+              <label class="form-label my-3"><strong>Giá tiền</strong></label>
+              <input type="number"
+                     class="form-control p-3 mb-3"
+                     formControlName="price"
+                     placeholder="Nhập giá tiền sản phẩm"
+                     [ngClass]="{ 'is-invalid' :  (f['price'].touched)  && f['price'].errors,
+                                  'is-valid' :  (f['price'].touched)  && !f['price'].errors}">
+              <app-show-validate-error [control]="formUpdate.controls['price']"
+                                       [controlName]="'Giá tiền'">
+              </app-show-validate-error>
+            </div>
+            <div class="form-item w-100 mb-3 position-relative">
+              <progress id="js-progressbar" class="uk-progress" value="0" max="100" hidden></progress>
+              <label class="form-label my-3"><strong>Hình ảnh</strong></label>
+              <div *ngIf="imagePreviews.length === 0" class="js-upload uk-placeholder uk-text-center uk-margin-remove">
+                <span uk-icon="icon: cloud-upload" class="me-2"></span>
+                <span class="uk-text-middle">Kéo và thả vào đây hình ảnh sản phẩm hoặc </span>
+                <div uk-form-custom>
+                  <input type="file" multiple (change)="handleFileInput($event)">
+                  <span class="uk-link">chọn từ máy tính</span>
+                </div>
+              </div>
+              <div *ngIf="imagePreviews.length > 0" class="image-preview-container">
+                <div *ngFor="let preview of imagePreviews" class="image-preview">
+                  <img [src]="preview" alt="Image Preview" class="thumbnail">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="uk-card-footer">
+      <div class="row g-4 d-flex justify-content-end">
+        <div class=" d-flex justify-content-end">
+          <button type="submit" class="btn border-primary btn-primary py-3 px-5 rounded-pill text-white me-4">Cập nhật
+          </button>
+          <a routerLink="/admin/products"
+             class="btn border-secondary btn-secondary py-3 px-5 rounded-pill text-secondary bg-white">Quay lại</a>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

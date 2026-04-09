@@ -1,0 +1,60 @@
+<div [ngClass]="{'fixed-top': isFixedTop}" class="container-fluid">
+  <div class="container topbar bg-primary d-none d-lg-block">
+    <div class="d-flex justify-content-between">
+      <div class="top-info ps-2">
+        <small class="me-3"><i class="fas fa-map-marker-alt me-2 text-secondary"></i> <a href="#" class="text-white">73
+          Đào Cam Mộc, Đông Anh, Hà Nội</a></small>
+        <small class="me-3"><i class="fas fa-envelope me-2 text-secondary"></i><a href="mailto:nguyentunglam230203@gmail.com" class="text-white">nguyentunglam230203@gmail.com</a></small>
+      </div>
+      <ng-template #noLogin>
+        <div class="top-link pe-2">
+          <a routerLink="/authentication/register" class="text-white"><small class="text-white mx-2">Đăng
+            ký</small>/</a>
+          <a routerLink="/authentication/login" class="text-white"><small class="text-white mx-2">Đăng nhập</small></a>
+        </div>
+      </ng-template>
+      <ng-container *ngIf="currentUser | async; else noLogin">
+        <div class="top-link pe-2">
+          <a routerLink="/" class="text-white" (click)="logout()"><small class="text-white mx-2">Đăng xuất</small></a>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+  <div class="container px-0">
+    <nav class="navbar navbar-light bg-white navbar-expand-xl">
+      <a routerLink="/" class="navbar-brand"><h1 class="text-primary display-6">PC Store</h1></a>
+      <button class="navbar-toggler py-2 px-3" type="button" (click)="closeNavbar(isCloseNav =! isCloseNav)">
+        <span class="fa fa-bars text-primary"></span>
+      </button>
+      <div class="collapse navbar-collapse bg-white" id="navbarCollapse">
+        <div class="navbar-nav mx-auto">
+          <ng-container *ngIf="isAdmin">
+            <a routerLink="/admin" class="nav-item nav-link"><i class="bi bi-house-gear"></i>Trang quản lý</a>
+          </ng-container>
+          <a routerLink="/" class="nav-item nav-link"><i class="bi bi-house me-1"></i>Trang chủ</a>
+          <a routerLink="/shop" class="nav-item nav-link"><i class="bi bi-shop me-1"></i>Cửa hàng</a>
+          <a routerLink="/cart" class="nav-item nav-link"><i class="bi bi-cart me-1"></i>Giỏ hàng</a>
+          <a routerLink="/checkout" class="nav-item nav-link"><i class="bi bi-credit-card me-1"></i>Thanh toán</a>
+        </div>
+        <div class="d-flex m-3 me-0">
+<!--          <a routerLink="/cart" class="position-relative me-4 my-auto">-->
+<!--            <i class="fa fa-shopping-bag fa-2x"></i>-->
+<!--            &lt;!&ndash;            <span class="position-absolute   bg-secondary rounded-circle d-flex align-items-center justify-content-center text-dark px-1" style="top: -5px; left: 15px; height: 20px; min-width: 20px;">3</span>&ndash;&gt;-->
+<!--          </a>-->
+          <ng-container *ngIf="currentUser | async; else guestIcon">
+            <a routerLink="/my-profile" class="nav-item nav-link user-profile-link">
+              <i class="fas fa-user flex-shrink-0"></i>
+              <span class="user-display-name d-none d-xl-inline">{{ displayName$ | async }}</span>
+              <span class="user-display-name-short d-inline d-xl-none">{{ (displayName$ | async)?.split(' ')?.slice(-1)?.[0] }}</span>
+            </a>
+          </ng-container>
+          <ng-template #guestIcon>
+            <a routerLink="/authentication/login" class="nav-item nav-link">
+              <i class="fas fa-user" style="font-size: 32px;"></i>
+            </a>
+          </ng-template>
+        </div>
+      </div>
+    </nav>
+  </div>
+</div>

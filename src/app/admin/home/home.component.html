@@ -1,0 +1,204 @@
+<div class="dashboard-wrapper">
+
+  <!-- ── LOADING SKELETON ── -->
+  <ng-container *ngIf="loading">
+    <div class="skeleton-row">
+      <div class="skeleton-card" *ngFor="let i of [1,2,3,4,5]"></div>
+    </div>
+    <div class="skeleton-chart"></div>
+    <div class="skeleton-row">
+      <div class="skeleton-panel"></div>
+      <div class="skeleton-panel"></div>
+    </div>
+  </ng-container>
+
+  <!-- ── DASHBOARD CONTENT ── -->
+  <ng-container *ngIf="!loading && dashboard">
+
+    <!-- ROW 1: Summary cards -->
+    <div class="stats-row">
+      <div class="stat-card blue">
+        <div class="stat-icon"><i class="bi bi-people-fill"></i></div>
+        <div class="stat-body">
+          <div class="stat-label">Tổng người dùng</div>
+          <div class="stat-value">{{ dashboard.totalUsers | number }}</div>
+        </div>
+      </div>
+
+      <div class="stat-card purple">
+        <div class="stat-icon"><i class="bi bi-box-seam-fill"></i></div>
+        <div class="stat-body">
+          <div class="stat-label">Tổng sản phẩm</div>
+          <div class="stat-value">{{ dashboard.totalProducts | number }}</div>
+        </div>
+      </div>
+
+      <div class="stat-card orange">
+        <div class="stat-icon"><i class="bi bi-cart-fill"></i></div>
+        <div class="stat-body">
+          <div class="stat-label">Tổng đơn hàng</div>
+          <div class="stat-value">{{ dashboard.totalOrders | number }}</div>
+        </div>
+      </div>
+
+      <div class="stat-card green">
+        <div class="stat-icon"><i class="bi bi-currency-dollar"></i></div>
+        <div class="stat-body">
+          <div class="stat-label">Doanh thu</div>
+          <div class="stat-value">{{ formatCurrency(dashboard.totalRevenue) }}</div>
+        </div>
+      </div>
+
+      <div class="stat-card yellow">
+        <div class="stat-icon"><i class="bi bi-clock-fill"></i></div>
+        <div class="stat-body">
+          <div class="stat-label">Chờ xử lý</div>
+          <div class="stat-value">{{ dashboard.pendingOrders | number }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 2: Revenue chart -->
+    <div class="card-section chart-section">
+      <div class="section-header">
+        <h2 class="section-title"><i class="bi bi-bar-chart-fill me-2"></i>Doanh thu theo tháng</h2>
+      </div>
+      <div class="chart-container">
+        <canvas baseChart
+          [data]="barChartData"
+          [type]="barChartType"
+          [options]="barChartOptions">
+        </canvas>
+      </div>
+    </div>
+
+    <!-- ROW 3: Top products + Recent orders -->
+    <div class="two-col-row">
+
+      <!-- Top selling products -->
+      <div class="card-section">
+        <div class="section-header">
+          <h2 class="section-title"><i class="bi bi-trophy-fill me-2 text-warning"></i>Top sản phẩm bán chạy</h2>
+        </div>
+        <div class="product-list">
+          <div
+            *ngFor="let p of dashboard.topSellingProducts; let i = index"
+            class="product-row"
+            [class.top-rank]="i === 0">
+            <span class="rank">{{ i + 1 }}</span>
+            <img [src]="p.imageUrl" [alt]="p.productName" class="product-thumb"
+                 onerror="this.src='assets/img/no-image.png'"/>
+            <div class="product-info">
+              <div class="product-name">{{ p.productName }}</div>
+              <div class="product-meta">Đã bán: <strong>{{ p.totalSold }}</strong></div>
+            </div>
+            <div class="product-revenue">{{ formatCurrency(p.totalRevenue) }}</div>
+          </div>
+          <div *ngIf="!dashboard.topSellingProducts?.length" class="empty-state">
+            Chưa có dữ liệu
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent orders -->
+      <div class="card-section">
+        <div class="section-header">
+          <h2 class="section-title"><i class="bi bi-receipt me-2"></i>Đơn hàng gần nhất</h2>
+          <a routerLink="/admin/order" class="view-all-link">Xem tất cả</a>
+        </div>
+        <div class="table-responsive">
+          <table class="dash-table">
+            <thead>
+              <tr>
+                <th>Mã đơn</th>
+                <th>Khách hàng</th>
+                <th>Tổng tiền</th>
+                <th>Trạng thái</th>
+                <th>Thời gian</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let o of dashboard.recentOrders">
+                <td class="order-id">{{ shortOrderId(o.orderId) }}</td>
+                <td>{{ o.customerName }}</td>
+                <td class="amount">{{ formatCurrency(o.totalAmount) }}</td>
+                <td><span class="status-badge" [ngClass]="getStatusClass(o.status)">{{ o.statusLabel }}</span></td>
+                <td class="time">{{ formatDateTime(o.createdAt) }}</td>
+              </tr>
+              <tr *ngIf="!dashboard.recentOrders?.length">
+                <td colspan="5" class="empty-state">Chưa có đơn hàng</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ROW 4: Recent users + Low stock -->
+    <div class="two-col-row">
+
+      <!-- Recent users -->
+      <div class="card-section">
+        <div class="section-header">
+          <h2 class="section-title"><i class="bi bi-person-plus-fill me-2 text-primary"></i>Người dùng mới</h2>
+          <a routerLink="/admin/user" class="view-all-link">Xem tất cả</a>
+        </div>
+        <div class="user-list">
+          <div class="user-row" *ngFor="let u of dashboard.recentUsers">
+            <div class="user-avatar" [style.background]="getAvatarColor(u.fullName)">
+              {{ getAvatarInitial(u.fullName) }}
+            </div>
+            <div class="user-info">
+              <div class="user-name">{{ u.fullName }}</div>
+              <div class="user-meta">&#64;{{ u.username }}</div>
+            </div>
+            <div class="user-date">{{ formatDate(u.createdAt) }}</div>
+          </div>
+          <div *ngIf="!dashboard.recentUsers?.length" class="empty-state">
+            Chưa có người dùng mới
+          </div>
+        </div>
+      </div>
+
+      <!-- Low stock products -->
+      <div class="card-section">
+        <div class="section-header">
+          <h2 class="section-title"><i class="bi bi-exclamation-triangle-fill me-2 text-warning"></i>Sản phẩm sắp hết hàng</h2>
+        </div>
+        <ng-container *ngIf="dashboard.lowStockProducts?.length; else noLowStock">
+          <div class="product-list">
+            <div class="product-row" *ngFor="let p of dashboard.lowStockProducts">
+              <img [src]="p.imageUrl" [alt]="p.productName" class="product-thumb"
+                   onerror="this.src='assets/img/no-image.png'"/>
+              <div class="product-info">
+                <div class="product-name">{{ p.productName }}</div>
+                <div class="product-meta">{{ p.categoryName }}</div>
+              </div>
+              <div class="stock-qty" [ngClass]="getStockClass(p.quantity)">
+                Còn {{ p.quantity }}
+              </div>
+            </div>
+          </div>
+        </ng-container>
+        <ng-template #noLowStock>
+          <div class="empty-state ok-state">
+            <i class="bi bi-check-circle-fill text-success me-2"></i>
+            Tất cả sản phẩm đều đủ hàng
+          </div>
+        </ng-template>
+      </div>
+
+    </div>
+
+  </ng-container>
+
+  <!-- ── NO DATA STATE ── -->
+  <ng-container *ngIf="!loading && !dashboard">
+    <div class="empty-state full-empty">
+      <i class="bi bi-exclamation-circle-fill text-danger me-2"></i>
+      Không thể tải dữ liệu dashboard. Vui lòng thử lại.
+    </div>
+  </ng-container>
+
+</div>

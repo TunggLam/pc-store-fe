@@ -1,0 +1,52 @@
+/* ── Order ID ── */
+.order-id-text {
+  font-family: monospace;
+  font-size: 0.82rem;
+  color: #495057;
+}
+
+/* ── Status Badges ── */
+.order-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badge-pending    { background: #fff3cd; color: #856404; }
+.badge-processing { background: #ffe5cc; color: #7d4000; }
+.badge-shipped    { background: #cfe2ff; color: #084298; }
+.badge-completed  { background: #d1e7dd; color: #0a3622; }
+.badge-cancelled  { background: #f8d7da; color: #842029; }
+
+/* ── Modal Overlay ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.modal-panel {
+  background: #fff;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 680px;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+}
+
+.modal-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}

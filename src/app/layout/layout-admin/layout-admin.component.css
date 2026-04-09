@@ -1,0 +1,117 @@
+/* ===================================================
+   ADMIN LAYOUT WRAPPER
+   =================================================== */
+
+.admin-wrapper {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Body shifts right by sidebar width */
+.admin-body {
+  flex: 1;
+  margin-left: 250px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  transition: margin-left 0.3s ease;
+  background: #f4f6f9;
+}
+
+.admin-wrapper.sidebar-collapsed .admin-body {
+  margin-left: 70px;
+}
+
+/* ===================================================
+   TOP HEADER BAR
+   =================================================== */
+
+.admin-top-header {
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  height: 64px;
+  background: #ffffff;
+  border-bottom: 1px solid #e8ecef;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  flex-shrink: 0;
+}
+
+.hamburger-btn {
+  background: none;
+  border: none;
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+  color: #495057;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.hamburger-btn:hover {
+  background: #f0f2f5;
+}
+
+.header-spacer {
+  flex: 1;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-icon-btn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #6c757d;
+  padding: 8px;
+  border-radius: 50%;
+  transition: background 0.2s, color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-icon-btn:hover {
+  background: #f0f2f5;
+  color: #343a40;
+}
+
+.header-user {
+  cursor: pointer;
+  color: #6c757d;
+  padding: 4px;
+  border-radius: 50%;
+  transition: color 0.2s;
+}
+
+.header-user:hover {
+  color: #343a40;
+}
+
+/* ===================================================
+   MAIN CONTENT AREA
+   =================================================== */
+
+.admin-content {
+  flex: 1;
+  /* padding provided by individual page components */
+}
+
+/* ===================================================
+   RESPONSIVE
+   =================================================== */
+
+@media (max-width: 991.98px) {
+  .admin-body {
+    margin-left: 0 !important;
+  }
+}

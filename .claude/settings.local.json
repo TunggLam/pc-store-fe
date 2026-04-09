@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(npx ng:*)",
+      "Bash(./mvnw compile:*)",
+      "Bash(cmd:*)"
+    ]
+  }
+}

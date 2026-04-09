@@ -1,0 +1,48 @@
+<div class="container-fluid py-5">
+  <div class="container py-5">
+    <div class="card border">
+      <div class="card-header">
+        <div class="card-title">
+          <h3 class="text-primary display-9 p-2">Thêm mới loại sản phẩm</h3>
+        </div>
+      </div>
+      <form [formGroup]="formCreate" (ngSubmit)="creteCategory()">
+        <div class="card-body">
+          <div class="card border">
+            <div class="card-body">
+              <div class="row justify-content-center">
+                <div class="col-lg-10">
+                  <div class="form-item w-100">
+                    <div class="d-flex flex-column">
+                      <label class="form-label my-3"><strong>Tên loại sản phẩm</strong></label>
+                      <input type="text" class="form-control p-3" formControlName="categoryName" placeholder="Nhập tên loại sản phẩm">
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-2">
+                  <div class="form-item w-100">
+                    <div class="d-flex flex-column">
+                      <label class="form-label my-3"><strong>Trạng thái</strong></label>
+                      <div class="py-3">
+                        <ng-switchery [(ngModel)]="isChecked" [ngModelOptions]="{standalone: true}" color="switchery-success" size="switchery-lg"></ng-switchery>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="row g-4 d-flex justify-content-end">
+            <div class="col d-flex justify-content-end p-4">
+              <button type="submit" class="btn border-secondary btn-primary py-3 px-5 rounded-pill text-white me-4">Thêm mới</button>
+              <a routerLink="/admin/categories"
+                 class="btn border-secondary btn-primary py-3 px-5 rounded-pill text-primary bg-white">Quay lại</a>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

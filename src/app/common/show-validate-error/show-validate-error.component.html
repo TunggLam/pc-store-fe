@@ -1,0 +1,49 @@
+<div *ngIf="control && control.invalid && (control.dirty || control.touched)">
+  <div [ngSwitch]="keyError">
+    <ng-container *ngSwitchCase="'required'">
+      <span class="text-error position-absolute  ">
+       {{controlName}} không được để trống
+      </span>
+    </ng-container>
+    <ng-container *ngSwitchCase="'invalidAmount'">
+      <span class="text-error position-absolute  ">
+
+      </span>
+    </ng-container>
+    <ng-container *ngSwitchCase="'pattern'">
+      <span class="text-error position-absolute  ">
+
+      </span>
+    </ng-container>
+    <ng-container *ngSwitchCase="'minlength'">
+      <span class="text-error position-absolute  ">
+        {{controlName}} phải có ít nhất {{minLength}} ký tự
+      </span>
+    </ng-container>
+    <ng-container *ngSwitchCase="'maxlength'">
+      <span class="text-error position-absolute  ">
+          {{controlName}} chỉ tối đa {{maxLength}} ký tự
+      </span>
+    </ng-container>
+    <ng-container *ngSwitchCase="'max'">
+      <span class="text-error position-absolute">
+
+      </span>
+    </ng-container>
+    <ng-container *ngSwitchCase="'min'">
+      <span class="text-error position-absolute">
+
+      </span>
+    </ng-container>
+    <ng-container *ngSwitchCase="'maxTwo'">
+      <span class="text-error position-absolute">
+
+      </span>
+    </ng-container>
+    <ng-container *ngSwitchCase="'minTwo'">
+      <span class="text-error position-absolute">
+
+      </span>
+    </ng-container>
+  </div>
+</div>

@@ -1,0 +1,61 @@
+<app-navbar></app-navbar>
+<app-loading></app-loading>
+<div class="container-fluid py-5">
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-6">
+        <h1 class="display-1 text-center text-primary">Đăng nhập</h1>
+        <form [formGroup]="formLogin" (ngSubmit)="login()">
+          <div>
+            <div class="form-item w-100 mb-3 position-relative">
+              <label class="form-label my-3 text"><strong>Tên tài khoản</strong></label>
+              <input type="text"
+                     formControlName="username"
+                     class="form-control p-3"
+                     placeholder="Nhập tên tài khoản"
+                     [ngClass]="{ 'is-invalid' :  (f['username'].touched)  && f['username'].errors,
+                                  'is-valid' :  (f['username'].touched)  && !f['username'].errors}">
+              <app-show-validate-error [control]="formLogin.controls['username']"
+                                       [controlName]="'Tên tài khoản'">
+              </app-show-validate-error>
+            </div>
+            <div class="form-item w-100 mb-3 position-relative">
+              <label class="form-label my-3"><strong>Mật khẩu</strong></label>
+              <input formControlName="password"
+                     type="password"
+                     class="form-control p-3"
+                     placeholder="Nhập mật khẩu"
+                     [ngClass]="{ 'is-invalid' :  (f['password'].touched)  && f['password'].errors,
+                                  'is-valid' :  (f['password'].touched)  && !f['password'].errors}">
+              <app-show-validate-error [control]="formLogin.controls['password']"
+                                       [controlName]="'Mật khẩu'"
+                                       [minLength]="'6'"
+                                       [maxLength]="'18'">
+              </app-show-validate-error>
+            </div>
+            <div class="row g-4 pt-4 d-flex justify-content-between">
+              <div class="d-flex justify-content-center">
+                <p>Bạn chưa có tài khoản? <a routerLink="/authentication/register">Đăng ký ngay</a></p>
+              </div>
+              <div class="col-12 col-md-6 d-flex justify-content-center">
+                <button type="submit"
+                        class="d-flex justify-content-center align-items-center btn border-secondary rounded-pill py-3 px-5 text-white bg-primary w-75">
+                  Đăng nhập
+                  <div *ngIf="isLoading" class="spinner-border ms-3" role="status">
+                    <span class="visually-hidden"></span>
+                  </div>
+                </button>
+              </div>
+              <div class="col-12 col-md-6 d-flex justify-content-center">
+                <button routerLink="/authentication/forgot-password" [disabled]="isLoading"
+                        class="btn border-secondary rounded-pill py-3 px-5 text-primary w-75">Quên mật khẩu
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<app-footer></app-footer>

@@ -1,0 +1,19 @@
+.user-profile-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.user-profile-link .fas.fa-user {
+  font-size: 32px;
+}
+
+.user-display-name,
+.user-display-name-short {
+  max-width: 150px;
+  word-break: break-word;
+  white-space: normal;
+  line-height: 1.2;
+  font-size: 15px;
+  font-weight: 600;
+}

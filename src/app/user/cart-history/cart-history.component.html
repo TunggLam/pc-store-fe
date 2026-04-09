@@ -1,0 +1,133 @@
+<div class="uk-animation-slide-right">
+
+  <!-- Header -->
+  <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+    <h5 class="mb-0 fw-bold">Lịch sử đơn hàng</h5>
+    <select class="form-select form-select-sm" style="max-width: 200px"
+            [(ngModel)]="filterStatus" (change)="onStatusChange()">
+      <option *ngFor="let opt of statusOptions" [value]="opt.value">{{ opt.label }}</option>
+    </select>
+  </div>
+
+  <!-- Table -->
+  <div class="table-responsive">
+    <table class="table table-hover table-bordered text-center mb-0 align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>STT</th>
+          <th>Mã đơn hàng</th>
+          <th>Số SP</th>
+          <th>Tổng tiền</th>
+          <th>Trạng thái</th>
+          <th>Ngày đặt</th>
+          <th>Thao tác</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngIf="orders.length === 0">
+          <td colspan="7" class="py-5 text-muted">
+            <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+            Bạn chưa có đơn hàng nào
+          </td>
+        </tr>
+        <tr *ngFor="let order of orders; let i = index">
+          <td>{{ pageIndex * pageSize + i + 1 }}</td>
+          <td>
+            <span class="order-id-text" [title]="order.orderId">
+              {{ order.orderId | slice:0:8 }}…
+            </span>
+          </td>
+          <td>{{ order.itemCount }}</td>
+          <td class="fw-semibold">{{ order.totalAmount | number:'1.0-0' }} đ</td>
+          <td>
+            <span class="order-badge" [ngClass]="getStatusClass(order.status)">
+              {{ order.statusLabel }}
+            </span>
+          </td>
+          <td class="text-muted small">{{ order.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+          <td>
+            <button class="btn btn-sm btn-outline-success" (click)="openDetail(order)">
+              <i class="bi bi-eye me-1"></i>Chi tiết
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <div class="mt-3">
+    <app-pagination
+      [totalItems]="total"
+      [itemsPerPage]="pageSize"
+      [currentPage]="pageIndex + 1"
+      (pageChange)="handlePageChange($event)">
+    </app-pagination>
+  </div>
+
+</div>
+
+<!-- Detail Modal Overlay -->
+<div class="modal-overlay" *ngIf="selectedOrder" (click)="closeDetail()">
+  <div class="modal-panel" (click)="$event.stopPropagation()">
+
+    <!-- Modal Header -->
+    <div class="modal-panel-header">
+      <div>
+        <h6 class="mb-1 fw-bold">
+          Chi tiết đơn hàng
+          <span class="text-primary ms-1">#{{ selectedOrder.orderId | slice:0:8 }}…</span>
+        </h6>
+        <span class="text-muted small" [title]="selectedOrder.orderId">
+          Mã đầy đủ: {{ selectedOrder.orderId }}
+        </span>
+      </div>
+      <button class="btn-close" (click)="closeDetail()"></button>
+    </div>
+
+    <!-- Status & Date -->
+    <div class="d-flex align-items-center gap-3 mb-3">
+      <span class="order-badge" [ngClass]="getStatusClass(selectedOrder.status)">
+        {{ selectedOrder.statusLabel }}
+      </span>
+      <span class="text-muted small">
+        <i class="bi bi-calendar3 me-1"></i>
+        {{ selectedOrder.createdAt | date:'dd/MM/yyyy HH:mm' }}
+      </span>
+    </div>
+
+    <!-- Items Table -->
+    <div class="table-responsive">
+      <table class="table table-bordered table-sm text-center mb-0 align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Hình</th>
+            <th class="text-start">Sản phẩm</th>
+            <th>Đơn giá</th>
+            <th>SL</th>
+            <th>Thành tiền</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of selectedOrder.items">
+            <td>
+              <img [src]="item.imageUrl" [alt]="item.productName"
+                   class="rounded" style="width:50px;height:50px;object-fit:cover;">
+            </td>
+            <td class="text-start">{{ item.productName }}</td>
+            <td>{{ item.price | number:'1.0-0' }} đ</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.totalPrice | number:'1.0-0' }} đ</td>
+          </tr>
+        </tbody>
+        <tfoot class="table-light">
+          <tr>
+            <td colspan="4" class="text-end fw-bold pe-3">Tổng cộng:</td>
+            <td class="fw-bold text-primary">{{ selectedOrder.totalAmount | number:'1.0-0' }} đ</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+  </div>
+</div>

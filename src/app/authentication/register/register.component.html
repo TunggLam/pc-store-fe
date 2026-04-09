@@ -1,0 +1,230 @@
+<app-navbar></app-navbar>
+<app-loading></app-loading>
+<div class="container-fluid py-5">
+  <div class="container py-5">
+    <form [formGroup]="formRegister" (ngSubmit)="sendOTP()">
+      <div class="row justify-content-center">
+        <h1 class="display-1 text-center text-primary mb-5">Đăng ký</h1>
+        <div class="col-lg-6">
+          <div class="form-item w-100">
+            <div class="d-flex flex-column position-relative mb-4">
+              <label class="form-label">Tên tài khoản</label>
+              <input type="text" class="form-control p-3" formControlName="username" placeholder="Nhập tên tài khoản"
+                     [ngClass]="{ 'is-invalid' : (f['username'].touched) && f['username'].errors || isUsernameExist,
+                                  'is-valid' : (f['username'].touched) && !f['username'].errors}">
+              <span *ngIf="isUsernameExist" style="color: #dc3545; font-size:0.875em">
+                Tài khoản này đã được sử dụng, vui lòng sử dụng tài khoản khác
+              </span>
+              <app-show-validate-error [control]="formRegister.controls['username']"
+                                       [controlName]="'Tên tài khoản'">
+              </app-show-validate-error>
+            </div>
+            <div class="d-flex flex-column position-relative mb-4">
+              <label class="form-label">Số điện thoại</label>
+              <input type="tel"
+                     class="form-control p-3"
+                     formControlName="phoneNumber"
+                     placeholder="Nhập số điện thoại"
+                     maxlength="10"
+                     [ngClass]="{ 'is-invalid' : (f['phoneNumber'].touched) && f['phoneNumber'].errors,
+                                  'is-valid' : (f['phoneNumber'].touched) && !f['phoneNumber'].errors}">
+              <app-show-validate-error [control]="formRegister.controls['phoneNumber']"
+                                       [controlName]="'Số điện thoại'"
+                                       [minLength]="'10'"
+                                       [maxLength]="'10'">
+              </app-show-validate-error>
+            </div>
+            <div class="d-flex flex-column position-relative mb-4">
+              <label class="form-label">Họ</label>
+              <input type="text" class="form-control p-3" formControlName="firstName" placeholder="Nhập họ"
+                     [ngClass]="{ 'is-invalid' : (f['firstName'].touched) && f['firstName'].errors,
+                                  'is-valid' : (f['firstName'].touched) && !f['firstName'].errors}">
+              <app-show-validate-error [control]="formRegister.controls['firstName']"
+                                       [controlName]="'Họ'">
+              </app-show-validate-error>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="form-item w-100">
+            <div class="d-flex flex-column position-relative mb-4">
+              <label class="form-label">Mật khẩu</label>
+              <input type="password"
+                     class="form-control p-3"
+                     formControlName="password"
+                     placeholder="Nhập mật khẩu"
+                     maxlength="18"
+                     [ngClass]="{ 'is-invalid' : (f['password'].touched) && f['password'].errors,
+                                  'is-valid' : (f['password'].touched) && !f['password'].errors}">
+              <app-show-validate-error [control]="formRegister.controls['password']"
+                                       [controlName]="'Mật khẩu'"
+                                       [minLength]="'6'"
+                                       [maxLength]="'18'">
+              </app-show-validate-error>
+            </div>
+            <div class="d-flex flex-column position-relative mb-4">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-control p-3" formControlName="email" placeholder="Nhập địa chỉ Email"
+                     [ngClass]="{ 'is-invalid' : (f['email'].touched) && f['email'].errors,
+                                  'is-valid' : (f['email'].touched) && !f['email'].errors}">
+              <app-show-validate-error [control]="formRegister.controls['email']"
+                                       [controlName]="'Địa chỉ email'">
+              </app-show-validate-error>
+            </div>
+            <div class="d-flex flex-column position-relative mb-4">
+              <label class="form-label">Tên</label>
+              <input type="text" class="form-control p-3" formControlName="lastName" placeholder="Nhập tên"
+                     [ngClass]="{ 'is-invalid' : (f['lastName'].touched) && f['lastName'].errors,
+                                  'is-valid' : (f['lastName'].touched) && !f['lastName'].errors}">
+              <app-show-validate-error [control]="formRegister.controls['lastName']"
+                                       [controlName]="'Tên'">
+              </app-show-validate-error>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="form-item w-100">
+            <div class="d-flex flex-column position-relative mb-4">
+              <label class="form-label">Tỉnh/Thành phố</label>
+              <mat-select class="form-select p-3"
+                          formControlName="city"
+                          placeholder="Chọn Tỉnh/Thành phố"
+                          (selectionChange)="getDistricts($event)"
+                          [ngClass]="{'is-invalid' : (f['city'].touched) && f['city'].errors,
+                                      'is-valid' : (f['city'].touched) && !f['city'].errors}">
+                <mat-option>
+                  <ngx-mat-select-search [formControl]="cityFilterCtrl"
+                                         placeholderLabel="Tìm kiếm Tỉnh/Thành phố"
+                                         noEntriesFoundLabel="Không tìm thấy Tỉnh/Thành phố">
+                  </ngx-mat-select-search>
+                </mat-option>
+
+                <mat-option *ngFor="let city of filteredCities | async" [value]="city?.id">
+                  {{city?.full_name}}
+                </mat-option>
+              </mat-select>
+              <app-show-validate-error [control]="formRegister.controls['city']"
+                                       [controlName]="'Tỉnh/Thành phố'">
+              </app-show-validate-error>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="form-item w-100">
+            <div class="d-flex flex-column position-relative mb-4">
+              <label class="form-label">Quận/Huyện</label>
+              <mat-select class="form-select p-3"
+                          formControlName="district"
+                          placeholder="Quận/Huyện"
+                          (selectionChange)="getCommunes($event)"
+                          [ngClass]="{ 'is-invalid' : (f['district'].touched) && f['district'].errors,
+                                     'is-valid' : (f['district'].touched) && !f['district'].errors}">
+                <mat-option>
+                  <ngx-mat-select-search [formControl]="districtFilterCtrl"
+                                         placeholderLabel="Tìm kiếm Quận/Huyện"
+                                         noEntriesFoundLabel="Không tìm thấy Quận/Huyện">
+
+                  </ngx-mat-select-search>
+                </mat-option>
+                <mat-option *ngFor="let district of filteredDistricts | async" [value]="district?.id">
+                  {{district?.full_name}}
+                </mat-option>
+              </mat-select>
+              <app-show-validate-error [control]="formRegister.controls['district']"
+                                       [controlName]="'Quận/Huyện'">
+              </app-show-validate-error>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="form-item w-100">
+            <div class="d-flex flex-column position-relative mb-4">
+              <label class="form-label">Phường/Xã</label>
+              <mat-select class="form-select p-3"
+                          formControlName="commune"
+                          placeholder="Chọn Phường/Xã"
+                          [ngClass]="{ 'is-invalid' : (f['commune'].touched) && f['commune'].errors,
+                                     'is-valid' : (f['commune'].touched) && !f['commune'].errors}">
+                <mat-option>
+                  <ngx-mat-select-search [formControl]="communesFilterCtrl"
+                                         placeholderLabel="Tìm kiếm Phường/Xã"
+                                         noEntriesFoundLabel="Không tìm thấy Phường/Xã">
+
+                  </ngx-mat-select-search>
+                </mat-option>
+                <mat-option *ngFor="let commune of filteredCommunes | async" [value]="commune?.id">
+                  {{commune?.full_name}}
+                </mat-option>
+              </mat-select>
+              <app-show-validate-error [control]="formRegister.controls['commune']"
+                                       [controlName]="'Phường/Xã'">
+              </app-show-validate-error>
+            </div>
+          </div>
+        </div>
+        <div class="row d-flex justify-content-between">
+          <div class="d-flex justify-content-center">
+            <p class="p-3">Bạn đã có tài khoản? <a routerLink="/authentication/login">Đăng nhập ngay</a></p>
+          </div>
+          <div class="col-12 col-md-6 d-flex justify-content-center">
+            <button type="submit"
+                    class="d-flex justify-content-center align-items-center btn border-primary rounded-pill py-3 px-5 text-white bg-primary w-75">
+              Đăng ký
+              <div *ngIf="isLoading" class="spinner-border ms-3" role="status">
+                <span class="visually-hidden"></span>
+              </div>
+            </button>
+          </div>
+          <div class="col-12 col-md-6 d-flex justify-content-center">
+            <button type="button" class="btn border-secondary py-3 px-5 rounded-pill text-secondary w-75"
+                    [disabled]="isLoading"
+                    (click)="onReset()">Nhập lại
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<app-footer></app-footer>
+
+
+<div class="modal" tabindex="-1" id="modalVerifyOTP">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Xác thực OTP</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form [formGroup]="formVerifyOTP" (ngSubmit)="register()">
+        <div class="modal-body">
+          <div>
+            <div class="form-item w-100">
+              <div class="d-flex flex-column position-relative mb-4">
+                <label class="form-label">Mã xác thực đã được gửi về địa chỉ email:
+                  <strong>{{maskEmail(email)}}</strong></label>
+                <label class="form-label my-3">Vui lòng kiểm tra email của bạn để lấy mã xác thực</label>
+                <input type="text"
+                       formControlName="otp"
+                       class="form-control p-3"
+                       placeholder="Nhập mã OTP"
+                       maxlength="6"
+                       [ngClass]="{'is-invalid':  (f2['otp'].touched)  && f2['otp'].errors,
+                                   'is-valid' :  (f2['otp'].touched)  && !f2['otp'].errors}">
+                <app-show-validate-error [control]="formVerifyOTP.controls['otp']"
+                                         [controlName]="'Mã xác thực'"
+                                         [minLength]="'6'"
+                                         [maxLength]="'6'">
+                </app-show-validate-error>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn border-primary text-primary">Xác nhận</button>
+          <button type="button" class="btn border-secondary bg-secondary text-white" data-bs-dismiss="modal">Đóng</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

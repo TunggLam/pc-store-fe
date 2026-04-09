@@ -1,0 +1,72 @@
+<div class="container-fluid page-header py-5">
+  <h1 class="text-center text-white display-6">Tài khoản của tôi</h1>
+  <ol class="breadcrumb justify-content-center mb-0">
+    <li class="breadcrumb-item"><a routerLink="/">Trang chủ</a></li>
+    <li class="breadcrumb-item active text-white"><a routerLink="/my-profile" class="text-white">Tài khoản</a></li>
+  </ol>
+</div>
+<div class="container-fluid py-5 bg-light">
+  <div class="container py-5">
+    <div class="card">
+      <div class="card-body">
+        <div class="row">
+          <div class="col-3 uk-animation-slide-left">
+            <ul class="uk-nav-default" uk-nav>
+
+              <!-- Thông tin tài khoản -->
+              <li class="uk-parent mb-2 rounded uk-open">
+                <a href="#" class="ts-16 rounded text-start p-2 ps-3"
+                   [ngClass]="{'bg-primary text-white': active === 'profile'}"
+                   (click)="setActive('profile')">
+                  <span uk-icon="icon: user" class="me-2"></span>
+                  Thông tin tài khoản
+                  <span uk-nav-parent-icon></span>
+                </a>
+                <ul class="uk-nav-sub">
+                  <li [ngClass]="{'uk-active': activeItem === 'profile'}"
+                      (click)="setActiveItem('profile')">
+                    <a [ngClass]="{'text-primary': activeItem === 'profile'}"
+                       routerLink="/my-profile" class="ts-16 mb-2 ps-5">
+                      Hồ sơ
+                    </a>
+                  </li>
+                  <li [ngClass]="{'uk-active': activeItem === 'change-password'}"
+                      (click)="setActiveItem('change-password')">
+                    <a [ngClass]="{'text-primary': activeItem === 'change-password'}"
+                       routerLink="/my-profile/change-password" class="ts-16 mb-2 ps-5">
+                      Đổi mật khẩu
+                    </a>
+                  </li>
+                </ul>
+              </li>
+
+              <!-- Đơn hàng -->
+              <li class="uk-parent rounded">
+                <a href="#" class="ts-16 rounded text-start p-2 ps-3"
+                   [ngClass]="{'bg-primary text-white': active === 'orders'}"
+                   (click)="setActive('orders')">
+                  <span uk-icon="icon: cart" class="me-2"></span>
+                  Đơn hàng
+                  <span uk-nav-parent-icon></span>
+                </a>
+                <ul class="uk-nav-sub">
+                  <li [ngClass]="{'uk-active': activeItem === 'order-history'}"
+                      (click)="setActiveItem('order-history')">
+                    <a [ngClass]="{'text-primary': activeItem === 'order-history'}"
+                       routerLink="/my-profile/order-history" class="ts-16 mb-2 ps-5">
+                      Lịch sử đơn hàng
+                    </a>
+                  </li>
+                </ul>
+              </li>
+
+            </ul>
+          </div>
+          <div class="col-9 uk-animation-slide-right">
+            <router-outlet></router-outlet>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

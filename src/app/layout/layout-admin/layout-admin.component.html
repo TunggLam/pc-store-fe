@@ -1,0 +1,37 @@
+<div class="admin-wrapper" [class.sidebar-collapsed]="sidebarRef.isSidebarCollapsed">
+
+  <!-- Sidebar -->
+  <app-navbar-admin #sidebarRef></app-navbar-admin>
+
+  <!-- Body (header + content + footer) -->
+  <div class="admin-body">
+
+    <!-- Top Header Bar -->
+    <header class="admin-top-header">
+      <!-- Hamburger (mobile only) -->
+      <button class="hamburger-btn d-lg-none" (click)="sidebarRef.toggleMobileSidebar()" aria-label="Mở menu">
+        <i class="bi bi-list"></i>
+      </button>
+
+      <div class="header-spacer"></div>
+
+      <div class="header-actions">
+        <button class="header-icon-btn" title="Thông báo">
+          <i class="bi bi-bell"></i>
+        </button>
+        <div class="header-user" title="Tài khoản">
+          <i class="fas fa-user-circle fa-2x text-secondary"></i>
+        </div>
+      </div>
+    </header>
+
+    <!-- Page Content -->
+    <main class="admin-content">
+      <router-outlet></router-outlet>
+    </main>
+
+    <!-- Footer -->
+    <app-footer></app-footer>
+
+  </div>
+</div>

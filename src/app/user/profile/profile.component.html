@@ -1,0 +1,146 @@
+<div class="uk-animation-slide-right">
+  <div class="uk-card uk-card-default">
+    <app-loading></app-loading>
+
+    <div class="uk-card-header">
+      <div class="uk-grid-small uk-flex-middle" uk-grid>
+        <div class="uk-width-expand">
+          <h3 class="uk-card-title uk-margin-remove-bottom">Hồ sơ của tôi</h3>
+          <p class="uk-text-meta uk-margin-remove-top">Quản lý thông tin hồ sơ của bạn</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CHẾ ĐỘ XEM ── -->
+    <ng-container *ngIf="!isEditing">
+      <div class="uk-card-body">
+        <div class="row">
+          <div class="col-3">
+            <div class="d-flex align-items-center">
+              <span uk-icon="icon: user" class="m-2"></span>
+              <p class="mt-3">Tên đăng nhập:</p>
+            </div>
+            <div class="d-flex align-items-center">
+              <span uk-icon="icon: user" class="m-2"></span>
+              <p class="mt-3">Họ và tên:</p>
+            </div>
+            <div class="d-flex align-items-center">
+              <span uk-icon="icon: mail" class="m-2"></span>
+              <p class="mt-3">Email:</p>
+            </div>
+            <div class="d-flex align-items-center">
+              <span uk-icon="icon: phone" class="m-2"></span>
+              <p class="mt-3">Số điện thoại:</p>
+            </div>
+            <div class="d-flex align-items-center">
+              <span uk-icon="icon: location" class="m-2"></span>
+              <p class="mt-3">Địa chỉ:</p>
+            </div>
+          </div>
+          <div class="col-9">
+            <div class="d-flex align-items-center">
+              <p class="mt-3">{{ user.username }}</p>
+            </div>
+            <div class="d-flex align-items-center">
+              <p class="mt-3">{{ user.firstName }} {{ user.lastName }}</p>
+            </div>
+            <div class="d-flex align-items-center">
+              <p class="mt-3">{{ user.email }}</p>
+            </div>
+            <div class="d-flex align-items-center">
+              <p class="mt-3">{{ user.phoneNumber }}</p>
+            </div>
+            <div class="d-flex align-items-center">
+              <p class="mt-3">{{ user.address }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="uk-card-footer text-end">
+        <button class="btn border-primary rounded-pill py-3 px-5 text-primary" (click)="startEdit()">
+          Chỉnh sửa
+        </button>
+      </div>
+    </ng-container>
+
+    <!-- ── CHẾ ĐỘ EDIT ── -->
+    <ng-container *ngIf="isEditing">
+      <div class="uk-card-body">
+        <form [formGroup]="editForm">
+
+          <!-- Tên đăng nhập (readonly) -->
+          <div class="form-item w-100 mb-3">
+            <label class="form-label my-2"><strong>Tên đăng nhập</strong></label>
+            <input type="text" class="form-control p-3 bg-light" [value]="user.username" disabled>
+          </div>
+
+          <!-- Họ + Tên trên cùng hàng -->
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-item w-100 mb-3 position-relative">
+                <label class="form-label my-2"><strong>Họ</strong></label>
+                <input type="text" formControlName="firstName" class="form-control p-3"
+                       placeholder="Nhập họ"
+                       [ngClass]="{'is-invalid': f['firstName'].touched && f['firstName'].errors,
+                                   'is-valid':   f['firstName'].touched && !f['firstName'].errors}">
+                <app-show-validate-error [control]="f['firstName']" [controlName]="'Họ'"></app-show-validate-error>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-item w-100 mb-3 position-relative">
+                <label class="form-label my-2"><strong>Tên</strong></label>
+                <input type="text" formControlName="lastName" class="form-control p-3"
+                       placeholder="Nhập tên"
+                       [ngClass]="{'is-invalid': f['lastName'].touched && f['lastName'].errors,
+                                   'is-valid':   f['lastName'].touched && !f['lastName'].errors}">
+                <app-show-validate-error [control]="f['lastName']" [controlName]="'Tên'"></app-show-validate-error>
+              </div>
+            </div>
+          </div>
+
+          <!-- Email -->
+          <div class="form-item w-100 mb-3 position-relative">
+            <label class="form-label my-2"><strong>Email</strong></label>
+            <input type="email" formControlName="email" class="form-control p-3"
+                   placeholder="Nhập email"
+                   [ngClass]="{'is-invalid': f['email'].touched && f['email'].errors,
+                               'is-valid':   f['email'].touched && !f['email'].errors}">
+            <app-show-validate-error [control]="f['email']" [controlName]="'Email'"></app-show-validate-error>
+          </div>
+
+          <!-- Số điện thoại -->
+          <div class="form-item w-100 mb-3 position-relative">
+            <label class="form-label my-2"><strong>Số điện thoại</strong></label>
+            <input type="text" formControlName="phoneNumber" class="form-control p-3"
+                   placeholder="Nhập số điện thoại (10 số, bắt đầu bằng 0)"
+                   [ngClass]="{'is-invalid': f['phoneNumber'].touched && f['phoneNumber'].errors,
+                               'is-valid':   f['phoneNumber'].touched && !f['phoneNumber'].errors}">
+            <app-show-validate-error [control]="f['phoneNumber']" [controlName]="'Số điện thoại'"></app-show-validate-error>
+          </div>
+
+          <!-- Địa chỉ -->
+          <div class="form-item w-100 mb-3 position-relative">
+            <label class="form-label my-2"><strong>Địa chỉ</strong></label>
+            <input type="text" formControlName="address" class="form-control p-3"
+                   placeholder="Nhập địa chỉ"
+                   [ngClass]="{'is-invalid': f['address'].touched && f['address'].errors,
+                               'is-valid':   f['address'].touched && !f['address'].errors}">
+            <app-show-validate-error [control]="f['address']" [controlName]="'Địa chỉ'"></app-show-validate-error>
+          </div>
+
+        </form>
+      </div>
+
+      <div class="uk-card-footer d-flex justify-content-end gap-2">
+        <button class="btn btn-outline-secondary rounded-pill py-3 px-5" (click)="cancelEdit()" [disabled]="isSaving">
+          Hủy
+        </button>
+        <button class="btn btn-success rounded-pill py-3 px-5" (click)="save()" [disabled]="isSaving">
+          <span *ngIf="isSaving" class="spinner-border spinner-border-sm me-2"></span>
+          Lưu
+        </button>
+      </div>
+    </ng-container>
+
+  </div>
+</div>

@@ -1,0 +1,86 @@
+/* ── Status Flow Progress ───────────────────────── */
+.status-flow {
+  display: flex;
+  align-items: center;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 80px;
+}
+
+.step-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid #dee2e6;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  transition: all 0.3s;
+}
+
+.step.done .step-dot {
+  background: #4caf50;
+  border-color: #4caf50;
+  color: #fff;
+}
+
+.step.active .step-dot {
+  border-color: #4caf50;
+  box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.2);
+  background: #fff;
+}
+
+.step-label {
+  font-size: 0.7rem;
+  color: #adb5bd;
+  margin-top: 6px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.step.done .step-label,
+.step.active .step-label {
+  color: #198754;
+  font-weight: 600;
+}
+
+/* Connector line between steps */
+.step-line {
+  width: 40px;
+  height: 2px;
+  background: #dee2e6;
+  margin-bottom: 20px;
+  flex-shrink: 0;
+  transition: background 0.3s;
+}
+
+.step-line.line-done {
+  background: #4caf50;
+}
+
+/* ── Info Table ──────────────────���───────────────── */
+.info-label {
+  width: 38%;
+  white-space: nowrap;
+}
+
+/* ── Status Badges ──────────────────────────────── */
+.order-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.badge-pending    { background: #fff3cd; color: #856404; }
+.badge-processing { background: #cff4fc; color: #055160; }
+.badge-shipped    { background: #e9d8fd; color: #5a189a; }
+.badge-completed  { background: #d1e7dd; color: #0a3622; }
+.badge-cancelled  { background: #f8d7da; color: #842029; }

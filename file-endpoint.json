@@ -1,0 +1,3149 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "PC Store API",
+    "description": "REST API cho hệ thống bán PC và linh kiện máy tính.\n\n**Xác thực:** Các endpoint yêu cầu đăng nhập cần gửi kèm header:\n```\nAuthorization: Bearer <access_token>\n```\nToken được lấy từ API `/api/authentication/login`.\n\n**Phân quyền:**\n- `USER` — khách hàng đã đăng nhập\n- `ADMIN` — quản trị viên\n",
+    "contact": {
+      "name": "PC Store Team",
+      "email": "nguyentunglam230203@gmail.com"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:9999",
+      "description": "Local Development"
+    }
+  ],
+  "security": [
+    {
+      "Bearer Authentication": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "OTP",
+      "description": "Gửi và xác thực mã OTP qua email"
+    },
+    {
+      "name": "Product",
+      "description": "Quản lý sản phẩm — xem danh sách, chi tiết và tạo mới (Admin)"
+    },
+    {
+      "name": "Category",
+      "description": "Quản lý danh mục sản phẩm"
+    },
+    {
+      "name": "User",
+      "description": "Thông tin tài khoản người dùng đang đăng nhập"
+    },
+    {
+      "name": "Cart",
+      "description": "Quản lý giỏ hàng — thêm, sửa, xóa sản phẩm (yêu cầu đăng nhập)"
+    },
+    {
+      "name": "Authentication",
+      "description": "Đăng ký, đăng nhập, quản lý phiên và mật khẩu"
+    },
+    {
+      "name": "Admin",
+      "description": "Quản trị hệ thống — người dùng, danh mục và đơn hàng (yêu cầu quyền ADMIN)"
+    },
+    {
+      "name": "Payment",
+      "description": "Thanh toán qua cổng VNPay"
+    }
+  ],
+  "paths": {
+    "/api/user/profile": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Lấy thông tin cá nhân",
+        "description": "Trả về thông tin hồ sơ của người dùng đang đăng nhập dựa trên JWT token.",
+        "operationId": "getUserProfile",
+        "responses": {
+          "400": {
+            "description": "Không tìm thấy thông tin người dùng",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Thành công",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProfileResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Chưa xác thực hoặc token hết hạn"
+          }
+        },
+        "security": [
+          {
+            "Bearer Authentication": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Cập nhật hồ sơ cá nhân",
+        "description": "Cập nhật thông tin hồ sơ của người dùng đang đăng nhập. Trường nào null sẽ giữ nguyên giá trị cũ. Không cho phép thay đổi username.",
+        "operationId": "updateProfile",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProfileRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "Dữ liệu không hợp lệ hoặc email/số điện thoại đã tồn tại",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Cập nhật thành công",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProfileResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Chưa xác thực hoặc token hết hạn"
+          }
+        },
+        "security": [
+          {
+            "Bearer Authentication": []
+          }
+        ]
+      }
+    },
+    "/api/product/quantity": {
+      "put": {
+        "tags": [
+          "Product"
+        ],
+        "summary": "Cập nhật số lượng sản phẩm (Admin)",
+        "description": "Cập nhật số lượng tồn kho của sản phẩm. Yêu cầu quyền ADMIN.",
+        "operationId": "updateQuantityProduct",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateProductRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "Không tìm thấy sản phẩm",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Không có quyền ADMIN"
+          },
+          "200": {
+            "description": "Cập nhật thành công",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Chưa xác thực"
+          }
+        },
+        "security": [
+          {
+            "Bearer Authentication": []
+          }
+        ]
+      }
+    },
+    "/api/category/{id}": {
+      "get": {
+        "tags": [
+          "Category"
+        ],
+        "summary": "Lấy chi tiết danh mục (Admin)",
+        "description": "Trả về thông tin chi tiết của một danh mục. Yêu cầu quyền ADMIN.",
+        "operationId": "categoryDetail",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID danh mục",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Không tìm thấy danh mục",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Thành công",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Không có quyền ADMIN"
+          },
+          "401": {
+            "description": "Chưa xác thực"
+          }
+        },
+        "security": [
+          {
+            "Bearer Authentication": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Category"
+        ],
+        "summary": "Cập nhật danh mục",
+        "description": "Cập nhật tên hoặc trạng thái hoạt động của danh mục.",
+        "operationId": "update",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID danh mục",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCategoryRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "Không tìm thấy danh mục",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Cập nhật thành công",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Category"
+        ],
+        "summary": "Xóa danh mục",
+        "description": "Xóa danh mục theo ID.",
+        "operationId": "delete",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID danh mục",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Không tìm thấy danh mục",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Xóa thành công"
+          }
+        }
+      }
+    },
+    "/api/cart": {
+      "get": {
+        "tags": [
+          "Cart"
+        ],
+        "summary": "Lấy giỏ hàng hiện tại",
+        "description": "Trả về giỏ hàng đang ở trạng thái PENDING của người dùng đang đăng nhập, kèm danh sách sản phẩm và tổng tiền.",
+        "operationId": "cart",
+        "responses": {
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Thành công",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CartResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Chưa xác thực"
+          }
+        },
+        "security": [
+          {
+            "Bearer Authentication": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Cart"
+        ],
+        "summary": "Cập nhật số lượng sản phẩm trong giỏ",
+        "description": "Tăng hoặc giảm số lượng sản phẩm trong giỏ hàng. Truyền `type = ADD` để tăng, `type = DECREASE` để giảm. Nếu số lượng về 0, sản phẩm bị xóa khỏi giỏ.",
+        "operationId": "updateCart",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCartRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "Không tìm thấy sản phẩm trong giỏ hoặc type không hợp lệ",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Cập nhật thành công"
+          },
+          "401": {
+            "description": "Chưa xác thực"
+          }
+        },
+        "security": [
+          {
+            "Bearer Authentication": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Cart"
+        ],
+        "summary": "Thêm sản phẩm vào giỏ hàng",
+        "description": "Thêm sản phẩm vào giỏ hàng PENDING. Nếu sản phẩm đã có trong giỏ thì cộng thêm số lượng.",
+        "operationId": "addCart",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddCartRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "Không tìm thấy sản phẩm",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Thêm vào giỏ thành công"
+          },
+          "401": {
+            "description": "Chưa xác thực"
+          }
+        },
+        "security": [
+          {
+            "Bearer Authentication": []
+          }
+        ]
+      }
+    },
+    "/api/admin/orders/{orderId}/status": {
+      "put": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Cập nhật trạng thái đơn hàng",
+        "description": "Cập nhật trạng thái xử lý đơn hàng. Luồng thông thường:\n`PENDING` → `PROCESSING` → `SHIPPED` → `COMPLETED`\n\nLưu ý: Không thể cập nhật đơn hàng đã ở trạng thái `COMPLETED` hoặc `CANCELLED`.\n",
+        "operationId": "updateOrderStatus",
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "description": "ID đơn hàng",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateOrderStatusRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "Không tìm thấy đơn hàng, trạng thái không hợp lệ, hoặc đơn đã kết thúc",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Cập nhật thành công"
+          },
+          "403": {
+            "description": "Không có quyền ADMIN"
+          },
+          "401": {
+            "description": "Chưa xác thực"
+          }
+        },
+        "security": [
+          {
+            "Bearer Authentication": []
+          }
+        ]
+      }
+    },
+    "/api/product": {
+      "post": {
+        "tags": [
+          "Product"
+        ],
+        "summary": "Tạo sản phẩm mới (Admin)",
+        "description": "Upload ảnh sản phẩm lên MinIO và lưu thông tin sản phẩm. Yêu cầu quyền ADMIN.",
+        "operationId": "createProduct",
+        "parameters": [
+          {
+            "name": "request",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/CreateProductRequest"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Dữ liệu không hợp lệ",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Tạo thành công",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Không có quyền ADMIN"
+          },
+          "401": {
+            "description": "Chưa xác thực"
+          }
+        },
+        "security": [
+          {
+            "Bearer Authentication": []
+          }
+        ]
+      }
+    },
+    "/api/payment/vnpay/init": {
+      "post": {
+        "tags": [
+          "Payment"
+        ],
+        "summary": "Khởi tạo đơn thanh toán VNPay",
+        "description": "Tạo đơn hàng và sinh URL thanh toán VNPay. Client redirect người dùng đến `target` URL trong response để thực hiện thanh toán.",
+        "operationId": "initOrder",
+        "responses": {
+          "400": {
+            "description": "Giỏ hàng trống hoặc không hợp lệ",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Khởi tạo thành công, trả về URL thanh toán",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/VNPayInitOrderResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Chưa xác thực"
+          }
+        },
+        "security": [
+          {
+            "Bearer Authentication": []
+          }
+        ]
+      }
+    },
+    "/api/payment/vnpay/callback": {
+      "post": {
+        "tags": [
+          "Payment"
+        ],
+        "summary": "Xử lý callback sau thanh toán VNPay",
+        "description": "Nhận kết quả thanh toán từ frontend sau khi người dùng hoàn tất trên trang VNPay.\nTruyền vào `invoiceNo` (mã đơn hàng `txnRef`) để hệ thống truy vấn và cập nhật trạng thái.\n",
+        "operationId": "callback",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VNPayCallbackRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "Mã đơn hàng không tồn tại",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Xử lý thành công",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CallbackResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/otp/send": {
+      "post": {
+        "tags": [
+          "OTP"
+        ],
+        "summary": "Gửi mã OTP",
+        "description": "Gửi mã OTP 6 chữ số tới email. Hỗ trợ 2 loại:\n- `REGISTER` — xác thực khi đăng ký tài khoản mới\n- `FORGOT_PASSWORD` — xác thực khi quên mật khẩu\n\nGiới hạn: tối đa **3 lần/ngày** mỗi email.\n",
+        "operationId": "sendOTP",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendOTPRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "Email không tồn tại hoặc đã vượt quá giới hạn gửi",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Gửi OTP thành công"
+          }
+        }
+      }
+    },
+    "/api/otp/forgot-password/verify": {
+      "post": {
+        "tags": [
+          "OTP"
+        ],
+        "summary": "Xác thực OTP quên mật khẩu",
+        "description": "Xác thực mã OTP đã gửi qua email để cho phép đặt lại mật khẩu. Sau khi xác thực thành công, gọi `/api/authentication/forgot-password` để đặt mật khẩu mới.",
+        "operationId": "verifyForgotPassword",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyOTPForgotPasswordRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "OTP sai, hết hạn hoặc đã bị khóa",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Xác thực OTP thành công"
+          }
+        }
+      }
+    },
+    "/api/category": {
+      "post": {
+        "tags": [
+          "Category"
+        ],
+        "summary": "Tạo danh mục mới (Admin)",
+        "description": "Tạo một danh mục sản phẩm mới. Tên danh mục phải duy nhất. Yêu cầu quyền ADMIN.",
+        "operationId": "create",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCategoryRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "Tên danh mục đã tồn tại hoặc không hợp lệ",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Tạo thành công"
+          },
+          "403": {
+            "description": "Không có quyền ADMIN"
+          },
+          "401": {
+            "description": "Chưa xác thực"
+          }
+        },
+        "security": [
+          {
+            "Bearer Authentication": []
+          }
+        ]
+      }
+    },
+    "/api/authentication/register": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Đăng ký tài khoản",
+        "description": "Tạo tài khoản mới. Yêu cầu đã gửi và xác thực OTP trước đó qua `/api/otp/send`.",
+        "operationId": "register",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "Dữ liệu không hợp lệ hoặc tài khoản đã tồn tại",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Đăng ký thành công"
+          }
+        }
+      }
+    },
+    "/api/authentication/refresh": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Làm mới token",
+        "description": "Dùng refresh token để lấy access token mới mà không cần đăng nhập lại.",
+        "operationId": "refresh",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshTokenRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "Refresh token không hợp lệ hoặc đã hết hạn",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Làm mới token thành công",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/authentication/password": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Đổi mật khẩu",
+        "description": "Đổi mật khẩu cho tài khoản đang đăng nhập. Yêu cầu Bearer token.",
+        "operationId": "changePassword",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "Mật khẩu cũ không đúng",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Chưa xác thực hoặc token hết hạn"
+          },
+          "200": {
+            "description": "Đổi mật khẩu thành công"
+          }
+        },
+        "security": [
+          {
+            "Bearer Authentication": []
+          }
+        ]
+      }
+    },
+    "/api/authentication/logout": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Đăng xuất",
+        "description": "Hủy token hiện tại khỏi Redis, kết thúc phiên đăng nhập.",
+        "operationId": "logout",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LogoutRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "Yêu cầu không hợp lệ",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Đăng xuất thành công"
+          }
+        }
+      }
+    },
+    "/api/authentication/login": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Đăng nhập",
+        "description": "Xác thực tài khoản và trả về JWT access token + refresh token.",
+        "operationId": "login",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "Sai tài khoản hoặc mật khẩu",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Đăng nhập thành công",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/authentication/forgot-password": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Đặt lại mật khẩu (quên mật khẩu)",
+        "description": "Đặt lại mật khẩu mới sau khi đã xác thực OTP qua `/api/otp/forgot-password/verify`.",
+        "operationId": "changeForgotPassword",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyForgotPasswordRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "OTP không hợp lệ hoặc đã hết hạn",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Đặt lại mật khẩu thành công"
+          }
+        }
+      }
+    },
+    "/api/user/orders": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Lấy lịch sử đơn hàng",
+        "description": "Trả về danh sách đơn hàng của người dùng đang đăng nhập, sắp xếp theo thời gian mới nhất trước. Hỗ trợ phân trang và lọc theo trạng thái.",
+        "operationId": "getMyOrders",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Số trang (bắt đầu từ 0)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            },
+            "example": 0
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "Số đơn hàng mỗi trang",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            },
+            "example": 10
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Lọc theo trạng thái: PENDING | PROCESSING | SHIPPED | COMPLETED | CANCELLED",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Thành công",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderHistoryResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Chưa xác thực hoặc token hết hạn"
+          }
+        },
+        "security": [
+          {
+            "Bearer Authentication": []
+          }
+        ]
+      }
+    },
+    "/api/products": {
+      "get": {
+        "tags": [
+          "Product"
+        ],
+        "summary": "Lấy danh sách sản phẩm",
+        "description": "Hỗ trợ phân trang, lọc theo danh mục (`categoryId`) và tìm kiếm theo tên (`name`).",
+        "operationId": "getProducts",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Số trang (bắt đầu từ 0)",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "example": 0
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "Số sản phẩm mỗi trang",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "example": 10
+          },
+          {
+            "name": "categoryId",
+            "in": "query",
+            "description": "ID danh mục để lọc",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Từ khóa tìm kiếm theo tên sản phẩm",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Tham số không hợp lệ",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Thành công",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/products/search": {
+      "get": {
+        "tags": [
+          "Product"
+        ],
+        "summary": "Tìm kiếm sản phẩm",
+        "description": "Tìm kiếm gần đúng, không phân biệt hoa thường theo tên và mô tả sản phẩm. Hỗ trợ lọc theo danh mục và phân trang. Trả về danh sách rỗng nếu keyword trống.",
+        "operationId": "searchProducts",
+        "parameters": [
+          {
+            "name": "keyword",
+            "in": "query",
+            "description": "Từ khóa tìm kiếm (bắt buộc)",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "categoryId",
+            "in": "query",
+            "description": "ID danh mục để lọc",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Số trang (bắt đầu từ 0)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            },
+            "example": 0
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "Số sản phẩm mỗi trang",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            },
+            "example": 10
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Tham số không hợp lệ",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Thành công",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/product/{id}": {
+      "get": {
+        "tags": [
+          "Product"
+        ],
+        "summary": "Lấy chi tiết sản phẩm",
+        "description": "Trả về đầy đủ thông tin sản phẩm theo ID.",
+        "operationId": "getProduct",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID sản phẩm",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Không tìm thấy sản phẩm",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Thành công",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/payment/ipn": {
+      "get": {
+        "tags": [
+          "Payment"
+        ],
+        "summary": "VNPay IPN — xác nhận thanh toán",
+        "description": "Endpoint nhận thông báo thanh toán tức thời (Instant Payment Notification) từ VNPay server.\n**Không gọi trực tiếp từ client.** VNPay sẽ tự động gọi endpoint này sau khi giao dịch hoàn tất.\n\nHệ thống sẽ xác minh chữ ký và cập nhật trạng thái đơn hàng.\n",
+        "operationId": "ipn",
+        "parameters": [
+          {
+            "name": "parameters",
+            "in": "query",
+            "description": "Các tham số VNPay gửi kèm (vnp_TxnRef, vnp_Amount, vnp_SecureHash...)",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Xử lý IPN thành công",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/VNPayIPNResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/categories": {
+      "get": {
+        "tags": [
+          "Category"
+        ],
+        "summary": "Lấy danh sách danh mục",
+        "description": "Trả về tất cả danh mục đang hoạt động. Truyền `productCount=true` để kèm số lượng sản phẩm trong mỗi danh mục.",
+        "operationId": "findAll",
+        "parameters": [
+          {
+            "name": "productCount",
+            "in": "query",
+            "description": "Truyền true để kèm số lượng sản phẩm trong mỗi danh mục",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            },
+            "example": false
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Thành công",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoriesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cart/history": {
+      "get": {
+        "tags": [
+          "Cart"
+        ],
+        "summary": "Lấy lịch sử đơn hàng",
+        "description": "Trả về thông tin đơn hàng theo cartId (dùng cho xem lại đơn hàng cũ).",
+        "operationId": "cartHistory",
+        "parameters": [
+          {
+            "name": "cartId",
+            "in": "query",
+            "description": "ID của đơn hàng cần xem",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Thành công",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CartResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Chưa xác thực"
+          }
+        },
+        "security": [
+          {
+            "Bearer Authentication": []
+          }
+        ]
+      }
+    },
+    "/api/admin/users": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Lấy danh sách người dùng",
+        "description": "Hỗ trợ tìm kiếm theo tên (`name`), tên đăng nhập (`username`), email. Có phân trang.",
+        "operationId": "getUsers",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Số trang (bắt đầu từ 0)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "example": 0
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "Số bản ghi mỗi trang",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "example": 10
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Tìm kiếm theo họ tên",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "username",
+            "in": "query",
+            "description": "Tìm kiếm theo tên đăng nhập",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "description": "Tìm kiếm theo email",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Thành công",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProfilesResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Không có quyền ADMIN"
+          },
+          "401": {
+            "description": "Chưa xác thực"
+          }
+        },
+        "security": [
+          {
+            "Bearer Authentication": []
+          }
+        ]
+      }
+    },
+    "/api/admin/user/{keycloakId}": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Lấy chi tiết người dùng theo Keycloak ID",
+        "description": "Trả về hồ sơ người dùng tương ứng với Keycloak ID.",
+        "operationId": "getUserByKeycloakId",
+        "parameters": [
+          {
+            "name": "keycloakId",
+            "in": "path",
+            "description": "Keycloak User ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Không tìm thấy người dùng",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Thành công",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProfileResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Không có quyền ADMIN"
+          },
+          "401": {
+            "description": "Chưa xác thực"
+          }
+        },
+        "security": [
+          {
+            "Bearer Authentication": []
+          }
+        ]
+      }
+    },
+    "/api/admin/orders": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Lấy danh sách đơn hàng",
+        "description": "Lấy tất cả đơn hàng trong hệ thống với phân trang và filter.\n\n**Các trạng thái đơn hàng:**\n- `PENDING` — Chờ xác nhận\n- `PROCESSING` — Đang xử lý\n- `SHIPPED` — Đang giao hàng\n- `COMPLETED` — Hoàn thành\n- `CANCELLED` — Đã hủy\n",
+        "operationId": "getOrders",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Số trang (bắt đầu từ 0)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            },
+            "example": 0
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "Số bản ghi mỗi trang",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            },
+            "example": 10
+          },
+          {
+            "name": "username",
+            "in": "query",
+            "description": "Lọc theo username khách hàng",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Lọc theo trạng thái: PENDING | PROCESSING | SHIPPED | COMPLETED | CANCELLED",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Thành công",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminOrdersResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Không có quyền ADMIN"
+          },
+          "401": {
+            "description": "Chưa xác thực"
+          }
+        },
+        "security": [
+          {
+            "Bearer Authentication": []
+          }
+        ]
+      }
+    },
+    "/api/admin/orders/{orderId}": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Lấy chi tiết đơn hàng",
+        "description": "Trả về đầy đủ thông tin đơn hàng gồm: danh sách sản phẩm, thông tin khách hàng và lịch sử thanh toán VNPay.",
+        "operationId": "getOrderDetail",
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "description": "ID đơn hàng (cart ID)",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Không tìm thấy đơn hàng",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Không có quyền ADMIN"
+          },
+          "200": {
+            "description": "Thành công",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminOrderResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Chưa xác thực"
+          }
+        },
+        "security": [
+          {
+            "Bearer Authentication": []
+          }
+        ]
+      }
+    },
+    "/api/admin/orders/statistics": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Thống kê đơn hàng",
+        "description": "Trả về tổng số đơn hàng phân theo từng trạng thái và tổng doanh thu từ các đơn đã hoàn thành (COMPLETED).",
+        "operationId": "getOrderStatistics",
+        "responses": {
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Thành công",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderStatisticsResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Không có quyền ADMIN"
+          },
+          "401": {
+            "description": "Chưa xác thực"
+          }
+        },
+        "security": [
+          {
+            "Bearer Authentication": []
+          }
+        ]
+      }
+    },
+    "/api/admin/categories": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Lấy danh sách danh mục (Admin)",
+        "description": "Lấy danh mục có hỗ trợ filter theo tên, trạng thái và sắp xếp. Ví dụ `sort=name:asc` hoặc `sort=active:desc`.",
+        "operationId": "getCategories",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Số trang",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "example": 0
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "Số bản ghi mỗi trang",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "example": 10
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Tìm kiếm theo tên danh mục",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Lọc theo trạng thái: true = đang hoạt động, false = đã ẩn",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Sắp xếp, ví dụ: `name:asc`, `active:desc`",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Thành công",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoriesResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Không có quyền ADMIN"
+          },
+          "401": {
+            "description": "Chưa xác thực"
+          }
+        },
+        "security": [
+          {
+            "Bearer Authentication": []
+          }
+        ]
+      }
+    },
+    "/api/cart/{cartId}/{productId}": {
+      "delete": {
+        "tags": [
+          "Cart"
+        ],
+        "summary": "Xóa sản phẩm khỏi giỏ hàng",
+        "description": "Xóa hoàn toàn một sản phẩm ra khỏi giỏ hàng.",
+        "operationId": "deleteCart",
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "description": "ID sản phẩm cần xóa",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cartId",
+            "in": "path",
+            "description": "ID giỏ hàng",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionModel"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Xóa thành công"
+          },
+          "401": {
+            "description": "Chưa xác thực"
+          }
+        },
+        "security": [
+          {
+            "Bearer Authentication": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ExceptionModel": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "detail": {
+            "type": "object"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "UpdateProfileRequest": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "maxLength": 50,
+            "minLength": 1,
+            "type": "string",
+            "description": "Tên",
+            "example": "Văn"
+          },
+          "lastName": {
+            "maxLength": 50,
+            "minLength": 1,
+            "type": "string",
+            "description": "Họ và tên đệm",
+            "example": "Nguyễn"
+          },
+          "email": {
+            "type": "string",
+            "description": "Địa chỉ email",
+            "example": "nguyenvan01@gmail.com"
+          },
+          "phoneNumber": {
+            "pattern": "^0[0-9]{9}$",
+            "type": "string",
+            "description": "Số điện thoại Việt Nam (10 số, bắt đầu bằng 0)",
+            "example": "0901234567"
+          },
+          "address": {
+            "maxLength": 500,
+            "minLength": 0,
+            "type": "string",
+            "description": "Địa chỉ giao hàng",
+            "example": "123 Nguyễn Huệ, Q1, TP.HCM"
+          }
+        },
+        "description": "Thông tin cập nhật hồ sơ. Trường nào null sẽ giữ nguyên giá trị cũ."
+      },
+      "UserProfileResponse": {
+        "type": "object",
+        "properties": {
+          "keycloakId": {
+            "type": "string",
+            "description": "Keycloak User ID"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "Tên",
+            "example": "Văn"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Họ và tên đệm",
+            "example": "Nguyễn"
+          },
+          "email": {
+            "type": "string",
+            "description": "Địa chỉ email",
+            "example": "nguyenvan01@gmail.com"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "description": "Số điện thoại",
+            "example": "0901234567"
+          },
+          "address": {
+            "type": "string",
+            "description": "Địa chỉ giao hàng",
+            "example": "123 Nguyễn Huệ, Q1, TP.HCM"
+          },
+          "username": {
+            "type": "string",
+            "description": "Tên đăng nhập",
+            "example": "nguyenvan01"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Tài khoản đang hoạt động hay bị khóa",
+            "example": true
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Thời điểm tạo tài khoản",
+            "format": "date-time"
+          }
+        },
+        "description": "Thông tin hồ sơ người dùng"
+      },
+      "CreateProductRequest": {
+        "required": [
+          "categoryId",
+          "name",
+          "price",
+          "quantity"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Tên sản phẩm",
+            "example": "CPU Intel Core i9-14900K"
+          },
+          "description": {
+            "type": "string",
+            "description": "Mô tả chi tiết sản phẩm",
+            "example": "Bộ vi xử lý Intel thế hệ 14 với 24 nhân"
+          },
+          "image": {
+            "type": "string",
+            "format": "binary"
+          },
+          "quantity": {
+            "type": "integer",
+            "description": "Số lượng tồn kho",
+            "format": "int32",
+            "example": 50
+          },
+          "price": {
+            "type": "number",
+            "description": "Giá bán (VNĐ)",
+            "example": 15990000
+          },
+          "categoryId": {
+            "type": "string",
+            "description": "ID danh mục sản phẩm",
+            "example": "uuid-category"
+          }
+        },
+        "description": "Thông tin tạo sản phẩm mới (multipart/form-data)"
+      },
+      "CategoryResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID danh mục (UUID)"
+          },
+          "name": {
+            "type": "string",
+            "description": "Tên danh mục",
+            "example": "CPU / Bộ xử lý"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Thời điểm tạo danh mục"
+          },
+          "productCount": {
+            "type": "integer",
+            "description": "Số lượng sản phẩm trong danh mục (chỉ có khi gọi với productCount=true)",
+            "format": "int32",
+            "example": 25
+          },
+          "active": {
+            "type": "boolean"
+          }
+        },
+        "description": "Thông tin danh mục sản phẩm"
+      },
+      "ProductResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID sản phẩm (UUID)",
+            "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+          },
+          "imageUrl": {
+            "type": "string",
+            "description": "URL ảnh sản phẩm (lưu trên MinIO)"
+          },
+          "name": {
+            "type": "string",
+            "description": "Tên sản phẩm",
+            "example": "CPU Intel Core i9-14900K"
+          },
+          "price": {
+            "type": "number",
+            "description": "Giá bán (VNĐ)",
+            "example": 15990000
+          },
+          "quantity": {
+            "type": "integer",
+            "description": "Số lượng tồn kho",
+            "format": "int32",
+            "example": 50
+          },
+          "description": {
+            "type": "string",
+            "description": "Mô tả sản phẩm"
+          },
+          "category": {
+            "$ref": "#/components/schemas/CategoryResponse"
+          }
+        },
+        "description": "Thông tin sản phẩm"
+      },
+      "UpdateCategoryRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "active": {
+            "type": "boolean"
+          }
+        }
+      },
+      "UpdateCartRequest": {
+        "required": [
+          "productId",
+          "type"
+        ],
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Loại cập nhật: `ADD` (tăng 1) hoặc `DECREASE` (giảm 1)",
+            "example": "ADD",
+            "enum": [
+              "ADD",
+              "DECREASE"
+            ]
+          },
+          "productId": {
+            "type": "string",
+            "description": "ID sản phẩm cần cập nhật",
+            "example": "abc123-uuid"
+          }
+        },
+        "description": "Yêu cầu cập nhật số lượng sản phẩm trong giỏ hàng"
+      },
+      "UpdateOrderStatusRequest": {
+        "required": [
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "Trạng thái mới của đơn hàng",
+            "example": "PROCESSING",
+            "enum": [
+              "PENDING",
+              "PROCESSING",
+              "SHIPPED",
+              "COMPLETED",
+              "CANCELLED"
+            ]
+          }
+        },
+        "description": "Yêu cầu cập nhật trạng thái đơn hàng"
+      },
+      "VNPayInitOrderResponse": {
+        "type": "object",
+        "properties": {
+          "target": {
+            "type": "string"
+          },
+          "txnRef": {
+            "type": "string"
+          }
+        }
+      },
+      "VNPayCallbackRequest": {
+        "required": [
+          "invoiceNo"
+        ],
+        "type": "object",
+        "properties": {
+          "invoiceNo": {
+            "type": "string"
+          }
+        }
+      },
+      "CallbackResponse": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "integer"
+          },
+          "responseCode": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "invoiceNo": {
+            "type": "string"
+          },
+          "paymentTime": {
+            "type": "string"
+          }
+        }
+      },
+      "SendOTPRequest": {
+        "required": [
+          "email",
+          "type"
+        ],
+        "type": "object",
+        "properties": {
+          "phoneNumber": {
+            "type": "string",
+            "description": "Số điện thoại (không bắt buộc)",
+            "example": "0901234567"
+          },
+          "username": {
+            "type": "string",
+            "description": "Tên đăng nhập (không bắt buộc)",
+            "example": "nguyenvan01"
+          },
+          "email": {
+            "type": "string",
+            "description": "Địa chỉ email nhận OTP",
+            "example": "nguyenvan01@gmail.com"
+          },
+          "type": {
+            "type": "string",
+            "description": "Loại OTP: REGISTER (đăng ký) hoặc FORGOT_PASSWORD (quên mật khẩu)",
+            "example": "REGISTER",
+            "enum": [
+              "REGISTER",
+              "FORGOT_PASSWORD"
+            ]
+          }
+        },
+        "description": "Yêu cầu gửi mã OTP qua email"
+      },
+      "VerifyOTPForgotPasswordRequest": {
+        "required": [
+          "email",
+          "otp"
+        ],
+        "type": "object",
+        "properties": {
+          "otp": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateCategoryRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "AddCartRequest": {
+        "required": [
+          "productId"
+        ],
+        "type": "object",
+        "properties": {
+          "productId": {
+            "type": "string",
+            "description": "ID sản phẩm",
+            "example": "abc123-uuid"
+          },
+          "quantity": {
+            "type": "integer",
+            "description": "Số lượng thêm vào giỏ (mặc định = 1)",
+            "format": "int32",
+            "example": 2,
+            "default": 1
+          }
+        },
+        "description": "Yêu cầu thêm sản phẩm vào giỏ hàng"
+      },
+      "RegisterRequest": {
+        "required": [
+          "email",
+          "firstName",
+          "lastName",
+          "otp",
+          "password",
+          "phoneNumber",
+          "username"
+        ],
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "description": "Tên",
+            "example": "Văn"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Họ và tên đệm",
+            "example": "Nguyễn"
+          },
+          "email": {
+            "type": "string",
+            "description": "Địa chỉ email",
+            "example": "nguyenvan01@gmail.com"
+          },
+          "address": {
+            "type": "string",
+            "description": "Địa chỉ giao hàng",
+            "example": "123 Nguyễn Huệ, Q1, TP.HCM"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "description": "Số điện thoại",
+            "example": "0901234567"
+          },
+          "username": {
+            "type": "string",
+            "description": "Tên đăng nhập (không dấu, không khoảng trắng)",
+            "example": "nguyenvan01"
+          },
+          "password": {
+            "type": "string",
+            "description": "Mật khẩu (tối thiểu 6 ký tự)",
+            "example": "Password@123"
+          },
+          "otp": {
+            "type": "string",
+            "description": "Mã OTP 6 chữ số đã được gửi tới email",
+            "example": "123456"
+          }
+        },
+        "description": "Thông tin đăng ký tài khoản mới"
+      },
+      "RefreshTokenRequest": {
+        "required": [
+          "refreshToken",
+          "username"
+        ],
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "description": "Refresh token nhận được từ lần đăng nhập trước"
+          },
+          "username": {
+            "type": "string",
+            "description": "Tên đăng nhập",
+            "example": "nguyenvan01"
+          }
+        },
+        "description": "Yêu cầu làm mới token"
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "description": "JWT access token dùng để gọi các API yêu cầu xác thực"
+          },
+          "expiresIn": {
+            "type": "integer",
+            "description": "Thời gian hết hạn của access token (giây)",
+            "format": "int64",
+            "example": 300
+          },
+          "refreshExpiresIn": {
+            "type": "integer",
+            "description": "Thời gian hết hạn của refresh token (giây)",
+            "format": "int64",
+            "example": 1800
+          },
+          "refreshToken": {
+            "type": "string",
+            "description": "Refresh token dùng để lấy access token mới"
+          },
+          "tokenType": {
+            "type": "string",
+            "description": "Loại token",
+            "example": "Bearer"
+          },
+          "idToken": {
+            "type": "string"
+          },
+          "notBeforePolicy": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sessionId": {
+            "type": "string"
+          },
+          "scope": {
+            "type": "string"
+          },
+          "error": {
+            "type": "string",
+            "description": "Mã lỗi (nếu đăng nhập thất bại)"
+          },
+          "errorDescription": {
+            "type": "string",
+            "description": "Mô tả lỗi"
+          },
+          "errorUri": {
+            "type": "string"
+          },
+          "roles": {
+            "type": "array",
+            "description": "Danh sách vai trò của người dùng",
+            "example": [
+              "ROLE_USER"
+            ],
+            "items": {
+              "type": "string",
+              "description": "Danh sách vai trò của người dùng",
+              "example": "[\"ROLE_USER\"]"
+            }
+          }
+        },
+        "description": "Kết quả đăng nhập — chứa JWT token và thông tin phiên"
+      },
+      "ChangePasswordRequest": {
+        "required": [
+          "newPassword",
+          "oldPassword"
+        ],
+        "type": "object",
+        "properties": {
+          "oldPassword": {
+            "type": "string",
+            "description": "Mật khẩu hiện tại",
+            "example": "OldPass@123"
+          },
+          "newPassword": {
+            "type": "string",
+            "description": "Mật khẩu mới",
+            "example": "NewPass@456"
+          }
+        },
+        "description": "Yêu cầu đổi mật khẩu"
+      },
+      "LogoutRequest": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          }
+        }
+      },
+      "LoginRequest": {
+        "required": [
+          "password",
+          "username"
+        ],
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "Tên đăng nhập",
+            "example": "nguyenvan01"
+          },
+          "password": {
+            "type": "string",
+            "description": "Mật khẩu",
+            "example": "Password@123"
+          }
+        },
+        "description": "Thông tin đăng nhập"
+      },
+      "VerifyForgotPasswordRequest": {
+        "required": [
+          "email",
+          "otp",
+          "password"
+        ],
+        "type": "object",
+        "properties": {
+          "otp": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "OrderHistoryDetailResponse": {
+        "type": "object",
+        "properties": {
+          "orderId": {
+            "type": "string",
+            "description": "ID đơn hàng (cart ID)"
+          },
+          "status": {
+            "type": "string",
+            "description": "Trạng thái đơn hàng",
+            "example": "COMPLETED",
+            "enum": [
+              "PENDING",
+              "PROCESSING",
+              "SHIPPED",
+              "COMPLETED",
+              "CANCELLED"
+            ]
+          },
+          "statusLabel": {
+            "type": "string",
+            "description": "Nhãn trạng thái tiếng Việt",
+            "example": "Hoàn thành"
+          },
+          "totalAmount": {
+            "type": "number",
+            "description": "Tổng tiền đơn hàng (VNĐ)",
+            "example": 3980000
+          },
+          "itemCount": {
+            "type": "integer",
+            "description": "Tổng số loại sản phẩm trong đơn",
+            "format": "int32",
+            "example": 2
+          },
+          "items": {
+            "type": "array",
+            "description": "Danh sách sản phẩm trong đơn hàng",
+            "items": {
+              "$ref": "#/components/schemas/OrderHistoryItemResponse"
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Thời điểm đặt hàng",
+            "format": "date-time"
+          }
+        },
+        "description": "Chi tiết một đơn hàng trong lịch sử"
+      },
+      "OrderHistoryItemResponse": {
+        "type": "object",
+        "properties": {
+          "productName": {
+            "type": "string",
+            "description": "Tên sản phẩm",
+            "example": "RAM Gskill Trident Z 16GB"
+          },
+          "imageUrl": {
+            "type": "string",
+            "description": "URL ảnh sản phẩm"
+          },
+          "price": {
+            "type": "integer",
+            "description": "Đơn giá (VNĐ)",
+            "format": "int32",
+            "example": 1990000
+          },
+          "quantity": {
+            "type": "integer",
+            "description": "Số lượng",
+            "format": "int32",
+            "example": 2
+          },
+          "totalPrice": {
+            "type": "number",
+            "description": "Thành tiền (VNĐ)",
+            "example": 3980000
+          }
+        },
+        "description": "Sản phẩm trong đơn hàng"
+      },
+      "OrderHistoryResponse": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "description": "Số trang hiện tại",
+            "format": "int32",
+            "example": 0
+          },
+          "size": {
+            "type": "integer",
+            "description": "Số đơn hàng mỗi trang",
+            "format": "int32",
+            "example": 10
+          },
+          "total": {
+            "type": "integer",
+            "description": "Tổng số đơn hàng",
+            "format": "int32",
+            "example": 25
+          },
+          "orders": {
+            "type": "array",
+            "description": "Danh sách đơn hàng",
+            "items": {
+              "$ref": "#/components/schemas/OrderHistoryDetailResponse"
+            }
+          }
+        },
+        "description": "Lịch sử đơn hàng của người dùng"
+      },
+      "ProductsResponse": {
+        "type": "object",
+        "properties": {
+          "totalElements": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "products": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProductResponse"
+            }
+          }
+        }
+      },
+      "VNPayIPNResponse": {
+        "type": "object",
+        "properties": {
+          "RspCode": {
+            "type": "string"
+          },
+          "Message": {
+            "type": "string"
+          }
+        }
+      },
+      "CategoriesResponse": {
+        "type": "object",
+        "properties": {
+          "totalElements": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CategoryResponse"
+            }
+          }
+        }
+      },
+      "CartItemResponse": {
+        "type": "object",
+        "properties": {
+          "productId": {
+            "type": "string",
+            "description": "ID sản phẩm"
+          },
+          "productName": {
+            "type": "string",
+            "description": "Tên sản phẩm",
+            "example": "CPU Intel Core i9-14900K"
+          },
+          "price": {
+            "type": "integer",
+            "description": "Đơn giá (VNĐ)",
+            "format": "int32",
+            "example": 15990000
+          },
+          "quantity": {
+            "type": "integer",
+            "description": "Số lượng",
+            "format": "int32",
+            "example": 2
+          },
+          "imageUrl": {
+            "type": "string",
+            "description": "URL ảnh sản phẩm"
+          },
+          "totalPrice": {
+            "type": "number",
+            "description": "Thành tiền = đơn giá × số lượng (VNĐ)",
+            "example": 31980000
+          }
+        },
+        "description": "Một sản phẩm trong giỏ hàng"
+      },
+      "CartResponse": {
+        "type": "object",
+        "properties": {
+          "cartId": {
+            "type": "string",
+            "description": "ID giỏ hàng (UUID)",
+            "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+          },
+          "cartItems": {
+            "type": "array",
+            "description": "Danh sách sản phẩm trong giỏ",
+            "items": {
+              "$ref": "#/components/schemas/CartItemResponse"
+            }
+          },
+          "totalAmount": {
+            "type": "number",
+            "description": "Tổng tiền của đơn hàng (VNĐ)",
+            "example": 31980000
+          },
+          "address": {
+            "type": "string",
+            "description": "Địa chỉ giao hàng mặc định của tài khoản",
+            "example": "123 Nguyễn Huệ, Q1, TP.HCM"
+          }
+        },
+        "description": "Thông tin giỏ hàng của người dùng"
+      },
+      "UserProfilesResponse": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "total": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "userProfiles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserProfileResponse"
+            }
+          }
+        }
+      },
+      "AdminOrderItemResponse": {
+        "type": "object",
+        "properties": {
+          "productId": {
+            "type": "string"
+          },
+          "productName": {
+            "type": "string"
+          },
+          "imageUrl": {
+            "type": "string"
+          },
+          "price": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalPrice": {
+            "type": "number"
+          }
+        },
+        "description": "Danh sách sản phẩm trong đơn hàng"
+      },
+      "AdminOrderPaymentResponse": {
+        "type": "object",
+        "properties": {
+          "paymentId": {
+            "type": "string"
+          },
+          "invoiceNo": {
+            "type": "string"
+          },
+          "cardType": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "integer"
+          },
+          "transactionNo": {
+            "type": "string"
+          },
+          "transactionStatus": {
+            "type": "string"
+          },
+          "transactionCreateDate": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "description": "Thông tin thanh toán VNPay (chỉ có khi xem chi tiết)"
+      },
+      "AdminOrderResponse": {
+        "type": "object",
+        "properties": {
+          "orderId": {
+            "type": "string",
+            "description": "ID đơn hàng (cart ID)"
+          },
+          "username": {
+            "type": "string",
+            "description": "Tên đăng nhập khách hàng",
+            "example": "nguyenvan01"
+          },
+          "customerName": {
+            "type": "string",
+            "description": "Họ tên khách hàng",
+            "example": "Nguyễn Văn"
+          },
+          "customerEmail": {
+            "type": "string",
+            "description": "Email khách hàng",
+            "example": "nguyenvan01@gmail.com"
+          },
+          "customerPhone": {
+            "type": "string",
+            "description": "Số điện thoại khách hàng",
+            "example": "0901234567"
+          },
+          "shippingAddress": {
+            "type": "string",
+            "description": "Địa chỉ giao hàng"
+          },
+          "status": {
+            "type": "string",
+            "description": "Trạng thái đơn hàng",
+            "example": "PROCESSING",
+            "enum": [
+              "PENDING",
+              "PROCESSING",
+              "SHIPPED",
+              "COMPLETED",
+              "CANCELLED"
+            ]
+          },
+          "statusLabel": {
+            "type": "string",
+            "description": "Nhãn trạng thái tiếng Việt",
+            "example": "Đang xử lý"
+          },
+          "items": {
+            "type": "array",
+            "description": "Danh sách sản phẩm trong đơn hàng",
+            "items": {
+              "$ref": "#/components/schemas/AdminOrderItemResponse"
+            }
+          },
+          "totalAmount": {
+            "type": "number",
+            "description": "Tổng tiền đơn hàng (VNĐ)",
+            "example": 31980000
+          },
+          "payment": {
+            "$ref": "#/components/schemas/AdminOrderPaymentResponse"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Thời điểm tạo đơn hàng",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "Thời điểm cập nhật cuối",
+            "format": "date-time"
+          }
+        },
+        "description": "Chi tiết đơn hàng"
+      },
+      "AdminOrdersResponse": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "total": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "orders": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AdminOrderResponse"
+            }
+          }
+        }
+      },
+      "OrderStatisticsResponse": {
+        "type": "object",
+        "properties": {
+          "totalOrders": {
+            "type": "integer",
+            "description": "Tổng số đơn hàng trong hệ thống",
+            "format": "int64",
+            "example": 150
+          },
+          "pendingOrders": {
+            "type": "integer",
+            "description": "Số đơn chờ xác nhận (PENDING)",
+            "format": "int64",
+            "example": 30
+          },
+          "processingOrders": {
+            "type": "integer",
+            "description": "Số đơn đang xử lý (PROCESSING)",
+            "format": "int64",
+            "example": 20
+          },
+          "shippedOrders": {
+            "type": "integer",
+            "description": "Số đơn đang giao hàng (SHIPPED)",
+            "format": "int64",
+            "example": 15
+          },
+          "completedOrders": {
+            "type": "integer",
+            "description": "Số đơn đã hoàn thành (COMPLETED)",
+            "format": "int64",
+            "example": 75
+          },
+          "cancelledOrders": {
+            "type": "integer",
+            "description": "Số đơn đã hủy (CANCELLED)",
+            "format": "int64",
+            "example": 10
+          },
+          "totalRevenue": {
+            "type": "number",
+            "description": "Tổng doanh thu từ các đơn đã hoàn thành (VNĐ)",
+            "example": 1199250000
+          }
+        },
+        "description": "Thống kê tổng quan đơn hàng"
+      }
+    },
+    "securitySchemes": {
+      "Bearer Authentication": {
+        "type": "http",
+        "description": "Nhập JWT access token lấy từ API đăng nhập",
+        "name": "Bearer Authentication",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

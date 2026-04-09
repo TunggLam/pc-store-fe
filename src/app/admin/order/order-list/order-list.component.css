@@ -1,0 +1,58 @@
+/* ── Statistics Cards ──────────────────────────── */
+.stat-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 16px 12px;
+  text-align: center;
+  border-left: 4px solid transparent;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.stat-total      { border-color: #6c757d; }
+.stat-pending    { border-color: #ffc107; }
+.stat-processing { border-color: #0dcaf0; }
+.stat-shipped    { border-color: #6f42c1; }
+.stat-completed  { border-color: #198754; }
+.stat-revenue    { border-color: #4caf50; }
+
+.stat-value {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #212529;
+  line-height: 1.2;
+  word-break: break-all;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: #6c757d;
+  margin-top: 4px;
+}
+
+/* ── Table ──────────────────────────────────────── */
+.order-id-text {
+  font-family: monospace;
+  font-size: 0.82rem;
+  color: #495057;
+}
+
+/* ── Status Badges ──────────────────────────────── */
+.order-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badge-pending    { background: #fff3cd; color: #856404; }
+.badge-processing { background: #cff4fc; color: #055160; }
+.badge-shipped    { background: #e9d8fd; color: #5a189a; }
+.badge-completed  { background: #d1e7dd; color: #0a3622; }
+.badge-cancelled  { background: #f8d7da; color: #842029; }

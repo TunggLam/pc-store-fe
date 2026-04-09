@@ -1,0 +1,81 @@
+<div class="container-fluid py-5">
+  <div class="container py-5">
+    <div class="card border">
+      <div class="card-header">
+        <div class="row">
+          <div class="card-title">
+            <div class="d-flex justify-content-start align-items-center">
+              <h3 class="text-primary display-9 p-2">Danh sách người dùng</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-hover table-responsive table-bordered">
+            <thead>
+            <tr>
+              <th scope="col" class="text-center align-content-center">Số thứ tự</th>
+              <th scope="col" class="text-center align-content-center">Họ và tên</th>
+              <th scope="col" class="text-center align-content-center">Username</th>
+              <th scope="col" class="text-center align-content-center">Email</th>
+              <th scope="col" class="text-center align-content-center">Trạng thái</th>
+              <th scope="col" class="text-center align-content-center">Hành động</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let item of users; index as i">
+              <th scope="row" class="text-center align-content-center">
+                <p class="mt-3">{{i + 1}}</p>
+              </th>
+              <td class="text-center align-content-center">
+                <p class="mt-3">{{item.firstName}} {{item.lastName}}</p>
+              </td>
+              <td class="text-center align-content-center">
+                <p class="mt-3">{{item.username}}</p>
+              </td>
+              <td class="text-center align-content-center">
+                <p class="mt-3">{{item.email}}</p>
+              </td>
+              <ng-container *ngIf="item?.isActive">
+                <td class="text-center align-content-center">
+                  <div class="btn border-primary btn-md rounded-circle bg-white border">
+                    <i class="fas fa-check text-primary"></i>
+                  </div>
+                </td>
+              </ng-container>
+              <ng-container *ngIf="!item?.isActive">
+                <td class="text-center align-content-center">
+                  <div class="btn border-danger btn-md rounded-circle bg-white border">
+                    <i class="fa fa-times text-danger"></i>
+                  </div>
+                </td>
+              </ng-container>
+              <td class="text-center align-content-center">
+                <button routerLink="/admin/user/{{item?.keycloakId}}/detail"
+                        class="btn border-info text-info border m-1 text-nowrap">
+                  <i class="fa fal fa-eye me-1"></i>
+                  Xem chi tiết
+                </button>
+                <button routerLink="/admin/user/{{item?.keycloakId}}/edit"
+                        class="btn border-info text-info border m-1 text-nowrap">
+                  <i class="fa fas fa-pen me-1"></i>
+                  Chỉnh sửa
+                </button>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card-footer">
+        <app-pagination
+          [totalItems]="totalElements"
+          [itemsPerPage]="pageSize"
+          [currentPage]="pageIndex + 1"
+          (pageChange)="handlePageChange($event)">
+        </app-pagination>
+      </div>
+    </div>
+  </div>
+</div>

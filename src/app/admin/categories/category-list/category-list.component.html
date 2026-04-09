@@ -1,0 +1,62 @@
+<div class="container-fluid py-5">
+  <div class="container py-5">
+    <div class="card border">
+      <div class="card-header">
+        <div class="card-title d-flex justify-content-between align-items-center">
+          <h3 class="text-primary display-9 p-2">Danh sách loại sản phẩm</h3>
+          <a routerLink="/admin/category/create" class="btn border-secondary btn-primary text-white">
+            <i class="fas fa-plus px-1"></i>
+             Thêm mới
+          </a>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-hover table-responsive table-bordered text-center">
+            <thead>
+            <tr>
+              <th scope="col">STT</th>
+              <th scope="col">Tên loại sảm phẩm</th>
+              <th scope="col">Trạng thái</th>
+              <th scope="col">Thời gian tạo</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let item of categories; index as i" routerLink="/admin/category/{{item?.id}}">
+              <th scope="row">
+                  <p class="mb-0 mt-4">{{i + 1}}</p>
+              </th>
+              <td>
+                  <p class="mb-0 mt-4">{{item?.name}}</p>
+              </td>
+              <td>
+                <ng-container *ngIf="item?.active">
+                    <button class="btn btn-md rounded-circle bg-white border mt-4 border-primary">
+                      <i class="fas fa-check text-primary "></i>
+                    </button>
+                </ng-container>
+                <ng-container *ngIf="!item?.active">
+                    <button class="btn btn-md rounded-circle bg-white border mt-4 border-danger">
+                      <i class="fa fa-times text-danger"></i>
+                    </button>
+                </ng-container>
+              </td>
+              <td>
+                <p class="mb-0 mt-4">{{item?.createdAt | date: 'dd/MM/yyyy HH:mm:ss'}}</p>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card-footer">
+        <app-pagination
+          [totalItems]="totalElements"
+          [itemsPerPage]="pageSize"
+          [currentPage]="pageIndex + 1"
+          (pageChange)="handlePageChange($event)">
+        </app-pagination>
+      </div>
+    </div>
+  </div>
+</div>

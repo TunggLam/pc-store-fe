@@ -1,0 +1,75 @@
+<div class="container-fluid py-5">
+  <div class="container py-5">
+    <div class="card border">
+      <div class="card-header">
+        <div class="card-title">
+          <h3 class="text-primary display-9 p-2">Thông tin người dùng: {{user.firstName}} {{user.lastName}}</h3>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card border">
+          <div class="card-body">
+            <div class="row justify-content-center">
+              <div class="col-lg-6">
+                <div class="form-item w-100">
+                  <div class="d-flex flex-column">
+                    <label class="form-label my-3"><strong>Tên tài khoản</strong></label>
+                    <input type="text" class="form-control p-3" disabled placeholder="{{user.username}}">
+                  </div>
+                  <div class="d-flex flex-column">
+                    <label class="form-label my-3"><strong>Số điện thoại</strong></label>
+                    <input type="number" class="form-control p-3" disabled placeholder="{{user.phoneNumber}}">
+                  </div>
+                  <div class="d-flex flex-column">
+                    <label class="form-label my-3"><strong>Họ</strong></label>
+                    <input type="text" class="form-control p-3" disabled placeholder="{{user.firstName}}">
+                  </div>
+                  <div class="d-flex flex-column">
+                    <label class="form-label my-3"><strong>Thời gian tạo</strong></label>
+                    <input type="text" class="form-control p-3" disabled
+                           placeholder="{{user.createdAt | date: 'dd/MM/yyyy HH:mm:ss'}}">
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="form-item w-100">
+                  <div class="d-flex flex-column">
+                    <label class="form-label my-3"><strong>ID Keycloak</strong></label>
+                    <input type="password" class="form-control p-3" disabled placeholder="{{user.keycloakId}}">
+                  </div>
+                  <div class="d-flex flex-column">
+                    <label class="form-label my-3"><strong>Email</strong></label>
+                    <input type="email" class="form-control p-3" disabled placeholder="{{user.email}}">
+                  </div>
+                  <div class="d-flex flex-column">
+                    <label class="form-label my-3"><strong>Tên</strong></label>
+                    <input type="text" class="form-control p-3" disabled placeholder="{{user.lastName}}">
+                  </div>
+                  <div class="d-flex flex-column">
+                    <label class="form-label my-3"><strong>Trạng thái tài khoản</strong></label>
+                    <button *ngIf="user.isActive" class="btn btn-outline-primary text-primary p-3 bg-white" disabled>Hoạt động</button>
+                    <button *ngIf="!user.isActive" class="btn btn-outline-danger text-danger bg-white p-3 ">Khoá tài khoản</button>
+                  </div>
+                </div>
+              </div>
+              <div class="d-flex flex-column">
+                <label class="form-label my-3"><strong>Địa chỉ</strong></label>
+                <input type="text" class="form-control p-3" disabled placeholder="{{user.address}}">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="row g-4 d-flex justify-content-end">
+          <div class="col d-flex justify-content-end p-4">
+            <a routerLink="/admin/user/{{user.keycloakId}}/edit"
+               class="btn border-secondary btn-primary py-3 px-5 rounded-pill text-white me-4">Chỉnh sửa</a>
+            <a routerLink="/admin/user"
+               class="btn border-secondary btn-primary py-3 px-5 rounded-pill text-primary bg-white">Quay lại</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

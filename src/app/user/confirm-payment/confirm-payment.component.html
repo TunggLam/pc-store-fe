@@ -1,0 +1,42 @@
+<div *ngIf="!isLoading" class="container-fluid py-5">
+  <div class="container py-5 text-center">
+    <div class="row justify-content-center">
+      <div class="col-lg-12">
+        <ng-container *ngIf="!isSuccess">
+          <i class="bi bi-cart-x display-1 text-danger"></i>
+          <h1 class="mb-4 text-danger text-uppercase">{{res.message}}</h1>
+          <p class="mb-4">Đơn hàng của bạn thanh toán không thành công. Vui lòng kiểm tra lại.</p>
+          <p class="mb-4">Mã đơn hàng: <strong>{{res.invoiceNo}}</strong></p>
+          <a class="btn border-primary rounded-pill py-3 px-5" routerLink="/">Quay lại trang chủ</a>
+        </ng-container>
+        <ng-container *ngIf="isSuccess">
+          <i class="bi bi-cart-check display-1 text-primary"></i>
+          <h1 class="mb-4 text-primary text-uppercase">{{res.message}}</h1>
+          <p class="mb-4">Đơn hàng của bạn đã được thanh toán thành công. Chúng tôi sẽ gửi sản phẩm đến bạn sớm nhất</p>
+          <p class="mb-4">Mã đơn hàng: <strong>{{res.invoiceNo}}</strong></p>
+          <div class="align-items-center">
+            <button class="btn border-primary rounded-pill py-3 px-5 m-2" routerLink="/shop">Xem chi tiết đơn hàng
+            </button>
+            <button class="btn border-primary rounded-pill py-3 px-5 m-2" routerLink="/shop">Tiếp tục mua sắm</button>
+          </div>
+
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div *ngIf="isLoading" class="container-fluid py-5">
+  <div class="container py-5 text-center">
+    <div class="row justify-content-center">
+      <div class="col-lg-12">
+        <div class="d-flex justify-content-center">
+          <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+          </div>
+        </div>
+        <p class="mt-4">Đơn hàng của bạn đang được xử lý. Vui lòng chờ trong ít phút</p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,46 @@
+<app-loading></app-loading>
+<div class="uk-card uk-card-default border rounded">
+  <div class="uk-card-header">
+    <div class="uk-card-title">
+      <h3 class="uk-card-title uk-margin-remove-bottom">Chi tiết sản phẩm</h3>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="row justify-content-center">
+      <div class="col-lg-4">
+        <div class="form-item w-100">
+          <div class="d-flex flex-column">
+            <p class="p-3"><strong>Tên sản phẩm:</strong></p>
+            <p class="p-3"><strong>Loại sản phẩm:</strong></p>
+            <p class="p-3"><strong>Số lượng:</strong></p>
+            <p class="p-3"><strong>Giá tiền:</strong></p>
+            <p class="p-3"><strong>Mô tả:</strong></p>
+            <p class="p-3"><strong>Hình ảnh:</strong></p>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-8">
+        <div class="form-item w-100">
+          <div class="d-flex flex-column">
+            <p class="p-3">{{product.name}}</p>
+            <p class="p-3">{{product.category?.name}}</p>
+            <p class="p-3">{{product.quantity | number}}</p>
+            <p class="p-3">{{product.price | number}}</p>
+            <p class="p-3">{{product.description}}</p>
+            <p class="p-3">{{product.name}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="uk-card-footer">
+    <div class="row g-4 d-flex justify-content-end">
+      <div class=" d-flex justify-content-end">
+        <button type="button" routerLink="/admin/product/{{product.id}}/update" class="btn border-primary btn-primary py-3 px-5 rounded-pill text-white me-4">Chỉnh sửa
+        </button>
+        <a routerLink="/admin/products"
+           class="btn border-secondary btn-secondary py-3 px-5 rounded-pill text-secondary bg-white">Quay lại</a>
+      </div>
+    </div>
+  </div>
+</div>

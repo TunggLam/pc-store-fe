@@ -1,0 +1,109 @@
+<!-- ===== ADMIN SIDEBAR ===== -->
+<nav class="admin-sidebar" [class.collapsed]="isSidebarCollapsed" [class.mobile-open]="isMobileSidebarOpen">
+
+  <!-- Brand / Logo -->
+  <div class="sidebar-header">
+    <a routerLink="/admin" class="sidebar-brand">
+      <i class="bi bi-pc-display-horizontal sidebar-brand-icon"></i>
+      <span class="sidebar-brand-text">PC Store Admin</span>
+    </a>
+    <button class="sidebar-toggle-btn d-none d-lg-flex" (click)="toggleSidebar()" title="Thu gọn sidebar">
+      <i class="bi" [ngClass]="isSidebarCollapsed ? 'bi-chevron-right' : 'bi-chevron-left'"></i>
+    </button>
+  </div>
+
+  <!-- Navigation Menu -->
+  <ul class="sidebar-nav">
+
+    <!-- Trang chủ -->
+    <li class="sidebar-nav-item">
+      <a routerLink="/admin"
+         routerLinkActive="active"
+         [routerLinkActiveOptions]="{exact: true}"
+         class="sidebar-nav-link"
+         title="Trang chủ">
+        <i class="bi bi-house-door sidebar-nav-icon"></i>
+        <span class="sidebar-nav-text">Trang chủ</span>
+      </a>
+    </li>
+
+    <!-- Người dùng -->
+    <li class="sidebar-nav-item" [class.open]="activeSubmenu === 'users'">
+      <a class="sidebar-nav-link has-submenu"
+         (click)="toggleSubmenu('users')"
+         [class.active]="router.url.startsWith('/admin/user')"
+         title="Người dùng">
+        <i class="bi bi-people sidebar-nav-icon"></i>
+        <span class="sidebar-nav-text">Người dùng</span>
+        <i class="bi bi-chevron-down sidebar-arrow"></i>
+      </a>
+      <ul class="sidebar-submenu">
+        <li>
+          <a routerLink="/admin/user" routerLinkActive="active" class="sidebar-submenu-link">
+            Danh sách người dùng
+          </a>
+        </li>
+      </ul>
+    </li>
+
+    <!-- Sản phẩm -->
+    <li class="sidebar-nav-item" [class.open]="activeSubmenu === 'products'">
+      <a class="sidebar-nav-link has-submenu"
+         (click)="toggleSubmenu('products')"
+         [class.active]="router.url.startsWith('/admin/product') || router.url.startsWith('/admin/categor') || router.url.startsWith('/admin/coupon')"
+         title="Sản phẩm">
+        <i class="bi bi-box-seam sidebar-nav-icon"></i>
+        <span class="sidebar-nav-text">Sản phẩm</span>
+        <i class="bi bi-chevron-down sidebar-arrow"></i>
+      </a>
+      <ul class="sidebar-submenu">
+        <li>
+          <a routerLink="/admin/products" routerLinkActive="active" class="sidebar-submenu-link">
+            Danh sách sản phẩm
+          </a>
+        </li>
+        <li>
+          <a routerLink="/admin/categories" routerLinkActive="active" class="sidebar-submenu-link">
+            Danh sách loại sản phẩm
+          </a>
+        </li>
+        <li>
+          <a routerLink="/admin/coupon" routerLinkActive="active" class="sidebar-submenu-link">
+            Mã giảm giá
+          </a>
+        </li>
+      </ul>
+    </li>
+
+    <!-- Đơn hàng -->
+    <li class="sidebar-nav-item" [class.open]="activeSubmenu === 'orders'">
+      <a class="sidebar-nav-link has-submenu"
+         (click)="toggleSubmenu('orders')"
+         [class.active]="router.url.startsWith('/admin/order')"
+         title="Đơn hàng">
+        <i class="bi bi-cart3 sidebar-nav-icon"></i>
+        <span class="sidebar-nav-text">Đơn hàng</span>
+        <i class="bi bi-chevron-down sidebar-arrow"></i>
+      </a>
+      <ul class="sidebar-submenu">
+        <li>
+          <a routerLink="/admin/order" routerLinkActive="active" class="sidebar-submenu-link">
+            Danh sách đơn hàng
+          </a>
+        </li>
+      </ul>
+    </li>
+
+  </ul>
+
+  <!-- Back to Store -->
+  <div class="sidebar-footer">
+    <a routerLink="/" class="sidebar-back-link" title="Về trang bán hàng">
+      <i class="bi bi-shop sidebar-nav-icon"></i>
+      <span class="sidebar-nav-text">Về trang bán hàng</span>
+    </a>
+  </div>
+</nav>
+
+<!-- Mobile overlay -->
+<div class="sidebar-overlay" [class.visible]="isMobileSidebarOpen" (click)="toggleMobileSidebar()"></div>

@@ -1,0 +1,128 @@
+<div class="container-fluid page-header py-5">
+  <h1 class="text-center text-white display-6">Thanh toán</h1>
+  <ol class="breadcrumb justify-content-center mb-0">
+    <li class="breadcrumb-item"><a routerLink="/">Trang chủ</a></li>
+    <li class="breadcrumb-item"><a routerLink="/cart">Giỏ hàng</a></li>
+    <li class="breadcrumb-item active text-white"><a routerLink="/checkout" class="text-white">Thanh toán</a></li>
+  </ol>
+</div>
+<div class="container-fluid py-5">
+  <app-loading></app-loading>
+  <div class="container py-5">
+    <h1 class="mb-4">Chi tiết thanh toán</h1>
+    <form action="#">
+      <div class="row g-5">
+        <div class="col-md-12 col-lg-6 col-xl-7 uk-animation-slide-left">
+          <div class="row">
+            <div class="col-md-12 col-lg-6">
+              <div class="form-item w-100">
+                <label class="form-label my-2">Họ</label>
+                <input type="text" class="form-control p-3 mb-2" value="{{user.firstName}}" readonly>
+              </div>
+            </div>
+            <div class="col-md-12 col-lg-6">
+              <div class="form-item w-100">
+                <label class="form-label my-2">Tên</label>
+                <input type="text" class="form-control p-3 mb-2" placeholder="{{user.lastName}}" disabled>
+              </div>
+            </div>
+          </div>
+          <div class="form-item">
+            <label class="form-label my-2">Địa chỉ</label>
+            <input type="text" class="form-control p-3 mb-2" placeholder="{{user.address}}" disabled>
+          </div>
+          <div class="form-item">
+            <label class="form-label my-2">Số điện thoại</label>
+            <input type="tel" class="form-control p-3 mb-2" placeholder="{{user.phoneNumber}}" disabled>
+          </div>
+          <div class="form-item">
+            <label class="form-label my-2">Địa chỉ email</label>
+            <input type="email" class="form-control p-3 mb-2" placeholder="{{user.email}}" disabled>
+          </div>
+          <div class="form-item">
+            <label class="form-label my-2">Ghi chú</label>
+            <textarea name="text" class="form-control p-3 mb-2" spellcheck="false" cols="30" rows="11"
+                      placeholder="Ghi chú cho đơn hàng (Không bắt buộc)"></textarea>
+          </div>
+        </div>
+        <div class="col-md-12 col-lg-6 col-xl-5 uk-animation-slide-right">
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+              <tr>
+                <th scope="col" class="text-center">Sản phẩm</th>
+                <th scope="col" class="text-center">Tên</th>
+                <th scope="col" class="text-center">Giá tiền</th>
+                <th scope="col" class="text-center">Số lượng</th>
+                <th scope="col" class="text-center">Tổng cộng</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr *ngFor="let cart of carts">
+                <th scope="row">
+                  <div class="d-flex align-items-center mt-2">
+                    <img src="{{cart?.imageUrl}}" class="img-fluid rounded-circle" style="width: 90px; height: 90px;"
+                         alt="">
+                  </div>
+                </th>
+                <td class="py-5 text-center">{{cart?.productName}}</td>
+                <td class="py-5 text-center">{{cart?.price | number}} VNĐ</td>
+                <td class="py-5 text-center">{{cart?.quantity | number}}</td>
+                <td class="py-5 text-center">{{cart?.totalPrice | number}} VNĐ</td>
+              </tr>
+              <tr>
+                <td class="py-5" colspan="2">
+                  <p class="mb-0 text-dark py-3">Tổng sổ tiền sản phẩm</p>
+                </td>
+                <td class="py-5" colspan="3">
+                  <div class="py-3 border-bottom border-top text-end">
+                    <p class="mb-0 text-dark">{{totalPrice | number}} VNĐ</p>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="py-5" colspan="2">
+                  <p class="mb-0 text-dark py-3">Phí ship</p>
+                </td>
+                <td class="py-5" colspan="3">
+                  <div class="py-3 border-bottom border-top text-end">
+                    <p class="mb-0 text-dark">0 VNĐ</p>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="py-5" colspan="2">
+                  <p class="mb-0 text-dark py-3">Hình thức thanh toán</p>
+                </td>
+                <td class="py-5" colspan="3">
+                  <div class="py-3 border-bottom border-top text-end">
+                    <input type="checkbox" checked class="form-check-input" readonly style="margin-right: 10px">
+                    <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-VNPAY-QR.png"
+                         style="width: 100px">
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="py-5" colspan="2">
+                  <p class="mb-0 text-dark py-3">Tổng chi phí đơn hàng</p>
+                </td>
+                <td class="py-5" colspan="3">
+                  <div class="py-3 border-bottom border-top text-end">
+                    <p class="mb-0 text-dark">{{totalPrice | number}} VNĐ</p>
+                  </div>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="row g-4 text-center align-items-center justify-content-center pt-4">
+            <button type="button" class="btn border-secondary py-3 px-4 text-uppercase w-100 text-primary"
+                    (click)="pay()">Thanh toán ngay
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
